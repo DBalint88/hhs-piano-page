@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/DBalint88/hhs-piano-page#readme",
   "devDependencies": {
+    "source-map-loader": "^1.0.0",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
   },

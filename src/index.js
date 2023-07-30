@@ -38,6 +38,7 @@ let userID = ''
 
 // set collections references
 const usersRef = collection(db, 'userProfiles')
+const songsRef = collection(db, 'songs')
 
 
 // Log in.
@@ -66,23 +67,65 @@ testButton.addEventListener('click', () => {
   console.log(userID)
 })
 
+
+let userLevel = 3
+
+// Build the song array
+
+
+
+let songs = []
+
+
+
+for (let i=1; i <= userLevel; i++) {
+
+  window['level' + i] = []
+
+  let q = query(songsRef, where("level", "==", i), orderBy("sequence"))
+
+  onSnapshot(q, (snapshot) => {
+    snapshot.docs.forEach((doc) => {
+      window['level' + i].push({ ...doc.data()})
+    })
+    songs.push(window['level' + i])
+  })
+}
+
+console.log('from after the for loop: ', songs)
+
+
+
+
+
+
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log('this is from the state change: ', user.uid)
     userID = user.uid
     const docRef = doc(db, "userProfiles", userID)
+    
+    // Try and grab the userProfile doc from the userProfiles collection.
     try {
       const docSnap = await getDoc(docRef);
+
+    // If the user's profile exists, print the song lists according to their level.
     if(docSnap.exists()) {
         console.log(docSnap.data());
+        userLevel = docSnap.get("Level")
+        console.log('userLevel: ', userLevel)
         // TO-DO:  Logic for generating page based on user's level
     } else {
       await setDoc(doc(db, "userProfiles", userID), {
-        Level: 1,
+        level: 1,
         completedSongs: [],
-        pendingSongs: []
+        pendingSongs: [],
+        failedSongs: []
       })
+
     }
+    
   }
     catch(error) {
       console.log(error)
