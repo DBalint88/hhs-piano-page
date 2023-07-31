@@ -72,29 +72,77 @@ let userLevel = 3
 
 // Build the song array
 
+const songs = []
+const testArray = [[1,2,3], [1,2,3,4], [1,2,3,4,5]]
 
 
-let songs = []
+
+
+  
 
 
 
-for (let i=1; i <= userLevel; i++) {
+//   getDocs(q)
+//   .then((snapshot) => {
+//     snapshot.docs.forEach((doc) => {
+//       window['level' + i].push({ ...doc.data()})
+//     })
+//     songs.push(window['level' + i])
+//   })
+// }
 
-  window['level' + i] = []
 
-  let q = query(songsRef, where("level", "==", i), orderBy("sequence"))
 
-  onSnapshot(q, (snapshot) => {
-    snapshot.docs.forEach((doc) => {
-      window['level' + i].push({ ...doc.data()})
+
+// async / await version so array has values to be iterated
+async function get_songs() {
+
+  for (let i=1; i <= userLevel; i++) {
+    window['level' + i] = []
+    let q = query(songsRef, where("level", "==", i), orderBy("sequence"))
+    await getDocs(q)
+    .then((snapshot) => {
+      snapshot.docs.forEach((doc) => {
+        window['level' + i].push({ ...doc.data() })
+      })
+      songs.push(window['level' + i])
     })
-    songs.push(window['level' + i])
-  })
+  }
+
+  print_songs();
 }
 
-console.log('from after the for loop: ', songs)
+get_songs();
+
+function print_songs () {
+  for (let i=1; i <= songs.length; i++) {
+
+    // Print the level list
+    let elem = document.createElement('li')
+    elem.textContent = 'Level ' + i
+    levelList.appendChild(elem)
+
+    // Print the songs themselves
+  }
+  songs.forEach(() => {
+  
+})
+}
 
 
+
+
+
+
+
+
+// Next for loop to print the 'songs' and 'levels' arrays (and contents) to the document.
+
+const levelList = document.getElementById('level-list')
+
+
+
+  
 
 
 
