@@ -74,27 +74,12 @@ let userLevel = 3
 
 const songs = []
 const testArray = [[1,2,3], [1,2,3,4], [1,2,3,4,5]]
+const navListWrapper = document.getElementById("nav-list-wrapper")
 
-
-
-
-  
-
-
-
-//   getDocs(q)
-//   .then((snapshot) => {
-//     snapshot.docs.forEach((doc) => {
-//       window['level' + i].push({ ...doc.data()})
-//     })
-//     songs.push(window['level' + i])
-//   })
-// }
-
-
-
+const levelUl = document.getElementById("level-ul")
 
 // async / await version so array has values to be iterated
+
 async function get_songs() {
 
   for (let i=1; i <= userLevel; i++) {
@@ -109,36 +94,59 @@ async function get_songs() {
     })
   }
 
-  print_songs();
+  console.log(songs)
+  printSongs();
+}
+
+
+// print the level / song list to the DOM
+
+function printSongs () {
+  for (let i=1; i <= songs.length; i++) {
+
+    // Print the level list
+    let levelButton = document.createElement('li')
+    levelButton.classList.add("level-button")
+    levelButton.setAttribute("id", i)
+    levelButton.textContent = 'Level ' + i
+    levelUl.appendChild(levelButton)
+
+    let songsContainer = document.createElement("div")
+    songsContainer.classList.add('song-list')
+    songsContainer.setAttribute("id", 'level-'+i)
+
+    let levelHeader = document.createElement("h2")
+    levelHeader.textContent = 'Level ' + i
+
+    let levelOl = document.createElement("ol")
+
+    navListWrapper.appendChild(songsContainer)
+    songsContainer.appendChild(levelHeader)
+    songsContainer.appendChild(levelOl)
+
+
+    // Print the songs themselves
+    for(let j=0; j<window['level' + i].length; j++) {
+      let song = document.createElement("li");
+      song.classList.add("song-button")
+      let songSrc = songs[i-1][j]
+      song.setAttribute("data-pdf", songSrc.image)
+      song.setAttribute("data-video", songSrc.youtube)
+      song.textContent = songSrc.title
+
+      levelOl.appendChild(song)
+
+    }
+  }
 }
 
 get_songs();
 
-function print_songs () {
-  for (let i=1; i <= songs.length; i++) {
-
-    // Print the level list
-    let elem = document.createElement('li')
-    elem.textContent = 'Level ' + i
-    levelList.appendChild(elem)
-
-    // Print the songs themselves
-  }
-  songs.forEach(() => {
-  
-})
-}
 
 
 
 
 
-
-
-
-// Next for loop to print the 'songs' and 'levels' arrays (and contents) to the document.
-
-const levelList = document.getElementById('level-list')
 
 
 
