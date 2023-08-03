@@ -5,16 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <script src="bundle.js" defer></script>
     <title>Document</title>
 </head>
-<body>
-    <h1>Header 1</h1>
-    <button id="googleSignIn" class="show">Sign in with Google</button>
-    <button id="signoutButton">Sign Out</button>
+  
+  <body>
+    <div id="content-wrapper">
 
-    <button id="testButton" class="show">Does this log the UID?</button>
-
-    <nav>
+      <nav>
         <div id="nav-list-wrapper">
             <div id="level-list">
                 <ul id="level-ul">
@@ -25,9 +23,46 @@
         
         
         <!-- Javascript adds the songs lists here, appended to #nav-list-wrapper -->
-        
-    </nav>
+        <p id="back-button">&lt&lt back</p>
+      </nav>
 
-    <script src="bundle.js"></script>
-</body>
+      <main>
+        <iframe id="iframe" src="" frameborder="0"></iframe>
+        <div class="level-list" id="splash">
+          <h1>The HHS Piano Page</h1>
+          <p>Log in, then click on a skill level to reveal the song links inside.</p>
+          <button id="googleSignIn" class="show">Sign in with Google</button>
+          <button id="signoutButton">Sign Out</button>
+          <button id="testButton" class="show">Does this log the UID?</button>
+          <br></br>
+          <p>All of the PDFs on this page are the work of Gil DeBenedetti @ <a href="https://gmajormusictheory.org/Freebies/freebiesFP.html">G Major Music Theory</a><p>
+          <p>Used with permission.</p>
+          
+          
+        </div>
+        
+        
+        
+        
+        
+        
+        
+       
+        
+        
+       
+        
+       
+        
+       
+      </main>
+        
+        
+      <footer>
+        <a id="video-link" href="" target="_blank"><img src="images/youtube-logo.png" alt="Link to the video of the currently displayed song."></a>
+        <a id="pdf-link" href="" target="_blank"><img src="images/pdf-icon.svg" alt="Link to video the current song externally."></a>
+      </footer>
+        
+    </div>
+  </body>
 </html>

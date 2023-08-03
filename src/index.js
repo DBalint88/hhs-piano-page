@@ -24,6 +24,8 @@ const firebaseConfig = {
     messagingSenderId: "324874631780",
     appId: "1:324874631780:web:afd0e3f3dd50ddd76a7d71"
 };
+
+
 //init firebase app
 const app = initializeApp(firebaseConfig)
 
@@ -67,20 +69,17 @@ testButton.addEventListener('click', () => {
   console.log(userID)
 })
 
-
-let userLevel = 3
+let userLevel;
 
 // Build the song array
-
 const songs = []
-const testArray = [[1,2,3], [1,2,3,4], [1,2,3,4,5]]
-const navListWrapper = document.getElementById("nav-list-wrapper")
 
+const navListWrapper = document.getElementById("nav-list-wrapper")
 const levelUl = document.getElementById("level-ul")
 
 // async / await version so array has values to be iterated
 
-async function get_songs() {
+async function getSongs() {
 
   for (let i=1; i <= userLevel; i++) {
     window['level' + i] = []
@@ -140,37 +139,21 @@ function printSongs () {
   }
 }
 
-get_songs();
 
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
+// Logic on Sign in & Sign out
 onAuthStateChanged(auth, async (user) => {
+  // Logic for when the user logs in. If succesful and profile exists, get userLevel & song arrays 
   if (user) {
-    console.log('this is from the state change: ', user.uid)
+    // Refer to the userProfile with the same ID as the user.
     userID = user.uid
     const docRef = doc(db, "userProfiles", userID)
-    
-    // Try and grab the userProfile doc from the userProfiles collection.
     try {
       const docSnap = await getDoc(docRef);
-
-    // If the user's profile exists, print the song lists according to their level.
-    if(docSnap.exists()) {
+      if(docSnap.exists()) {
         console.log(docSnap.data());
         userLevel = docSnap.get("Level")
-        console.log('userLevel: ', userLevel)
+        getSongs();
+        printSongs();
         // TO-DO:  Logic for generating page based on user's level
     } else {
       await setDoc(doc(db, "userProfiles", userID), {
@@ -182,6 +165,7 @@ onAuthStateChanged(auth, async (user) => {
 
     }
     
+    
   }
     catch(error) {
       console.log(error)
@@ -192,4 +176,65 @@ onAuthStateChanged(auth, async (user) => {
     // ...
   }
 });
-//
+
+
+//  OLD PAGE LOGIC BELOW V V V V V
+
+// Variables
+
+let levelList = document.getElementById("level-list");
+let levelButton = document.getElementsByClassName("level-button");
+let songList = document.getElementsByClassName("song-list");
+let songButton = document.getElementsByClassName("song-button")
+let backButton = document.getElementById("back-button");
+let iframe = document.getElementById("iframe");
+let splash = document.getElementById("splash");
+let videoLink = document.getElementById("video-link");
+let pdfLink = document.getElementById("pdf-link");
+
+
+
+// Click Events
+
+backButton.addEventListener("click", hideSongList);
+
+for (let i = 0; i < levelButton.length; i++) {
+  levelButton[i].addEventListener("click", callSongList);
+}
+
+for (let l = 0; l < songButton.length; l++) {
+  songButton[l].addEventListener("click", loadSong);
+}
+
+
+
+// Functions
+
+function callSongList(e) {
+  levelList.classList.add("inactive-level-list");
+  for (let j = 0; j < songList.length; j++) {
+    if (songList[j].id == ("level-" + (this.id))) {
+      songList[j].classList.add("active-song-list");
+    }
+  }
+  backButton.classList.add("back-button-active")    
+}
+
+
+function hideSongList() {
+  for (let k = 0; k < songList.length; k++) {
+    songList[k].classList.remove("active-song-list") 
+  }
+  levelList.classList.remove("inactive-level-list");
+  backButton.classList.remove("back-button-active");
+}
+
+
+function loadSong(e) {
+  splash.style.display = "none";
+  iframe.style.width = "100%";
+  iframe.style.height = "100%";
+  iframe.src = this.dataset.pdf + "#zoom=118";
+  videoLink.href = this.dataset.video;
+  pdfLink.href = this.dataset.pdf +"#zoom=83";
+}

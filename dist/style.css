@@ -1,7 +1,200 @@
+* {
+box-sizing: border-box;
+  color: white;
+}
+
+
+body {
+  display: grid;
+  justify-items: center;
+  background-color: black;
+  margin: 0;
+}
+
 button {
     display: none;
 }
 
 .show {
     display: block;
+}
+
+#content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: 9fr 1fr;
+  grid-template-areas: 
+    "nav main"
+    "footer main";
+  gap: .5rem;
+  background-color: green;
+  width: 100%;
+  max-width: 1349px;
+  min-height: 100vh;
+  border-radius: 1rem;
+  padding: .5rem;
+
+  }
+
+  /*
+header {
+  grid-area: header;
+  background-color: black;
+  border-radius: 1rem;
+  text-align: center;
+}
+*/
+
+/* Nav Stuff */
+
+#level-list {
+  width: 100%;
+  transition: .25s linear;
+  position: absolute;
+}
+
+
+.inactive-level-list {
+  transform: translate(-400px);
+}
+
+
+
+.song-list {
+  width: 100%;
+  position: absolute;
+  left: 400px;
+  transition: .25s linear;
+}
+
+.active-song-list {
+  transform: translate(-400px);
+}
+
+
+
+nav {
+  grid-area: nav;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  color: black;
+  border-radius: 1rem;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  overflow-x: hidden;
+  }
+
+#nav-list-wrapper {
+  height: 90%;
+  width: 100%;
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+nav ul li {
+  font-weight: bolder;
+}
+
+.song-button {
+  cursor: pointer;
+}
+
+
+
+#back-button {
+  cursor: default;
+  position: relative;
+  left: 400px;
+  transition: .25s linear;
+}
+
+.back-button-active {
+  cursor: pointer !important;
+  transform: translate(-400px);
+}
+
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-area: main;
+  background-color: black;
+  border-radius: 1rem;
+  width: 100%;
+  text-align: center;
+  }
+
+.level-list {
+  display: none;
+}
+
+
+
+.level-button {
+  cursor: pointer;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ol {
+  padding: 0 
+} 
+
+ol li { 
+  list-style-position: inside; 
+}
+
+li {
+  margin: auto;
+  margin-bottom: 1rem;
+}
+
+footer {
+  grid-area: footer;
+  display: flex;
+  border-radius: 1rem;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
+
+footer a {
+  display: block;
+  width: 50%;
+  height: 100%;
+  border-radius: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+footer a img {
+  width: 31%;
+  height: auto;
+}
+
+#video-link img {
+  width: 55%;
+}
+
+#splash {
+  display: block;
+}
+
+iframe {
+  width: 0;
+  height: 0;
+  border-radius: 1rem;
 }
