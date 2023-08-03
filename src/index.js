@@ -64,10 +64,6 @@ logoutButton.addEventListener('click', () => {
   })
 })
 
-const testButton = document.getElementById("testButton")
-testButton.addEventListener('click', () => {
-  console.log(userID)
-})
 
 let userLevel;
 

@@ -11,13 +11,20 @@ body {
   margin: 0;
 }
 
-button {
-    display: none;
+
+#googleSignIn {
+  margin: auto;
+  height: 3rem;
+  width: 12rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
-.show {
-    display: block;
+#googleSignIn > img {
+  height: 1.5rem;
 }
+
 
 #content-wrapper {
   display: grid;
