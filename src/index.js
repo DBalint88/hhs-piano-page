@@ -35,48 +35,48 @@ const db = getFirestore(app)
 const auth = getAuth()
 const user = auth.currentUser
 const provider = new GoogleAuthProvider();
+
+/*
+^^^^^^^^^^^^
+Don't touch anything above this line.
+
+*/
+
+
+
+
 let userID = ''
-
-
-// set collections references
-const usersRef = collection(db, 'userProfiles')
-const songsRef = collection(db, 'songs')
-
-
-// Log in.
-const loginButton = document.getElementById("googleSignIn")
-const logoutButton = document.getElementById("signoutButton")
-
-loginButton.addEventListener('click', () => {
-  signInWithPopup(auth, provider)
-  loginButton.classList.remove('show')
-  logoutButton.classList.add('show')
-  console.log('logged in:', auth)
-  })
-
-
-logoutButton.addEventListener('click', () => {
-  signOut(auth)
-  .then(() => {
-    console.log('logged out')
-    loginButton.classList.add('show')
-    logoutButton.classList.remove('show')
-  })
-})
-
-
+let pendingSongs = []
+let completedSongs = []
+let failedSongs = []
 let userLevel;
-
-// Build the song array
 const songs = []
+
+
+
+// NAV ELEMENT ANCHORS
 
 const navListWrapper = document.getElementById("nav-list-wrapper")
 const levelUl = document.getElementById("level-ul")
 
-// async / await version so array has values to be iterated
+
+
+// DEFINE COLLECTIONS REFERENCES
+const usersRef = collection(db, 'userProfiles')
+const songsRef = collection(db, 'songs')
+
+
+
+// FETCH USER DATA FROM SERVER -> LOCAL
+
+function getUserData(docsnap) {
+  
+}
+
+
+// FETCH SONGS APPROPRIATE TO THE USER'S LEVEL
 
 async function getSongs() {
-
   for (let i=1; i <= userLevel; i++) {
     window['level' + i] = []
     let q = query(songsRef, where("level", "==", i), orderBy("sequence"))
@@ -88,13 +88,12 @@ async function getSongs() {
       songs.push(window['level' + i])
     })
   }
-
-  console.log(songs)
   printSongs();
 }
 
 
-// print the level / song list to the DOM
+
+// GENERATE THE SONG CONTENT TO THE PAGE
 
 function printSongs () {
   for (let i=1; i <= songs.length; i++) {
@@ -105,6 +104,7 @@ function printSongs () {
     levelButton.setAttribute("id", i)
     levelButton.textContent = 'Level ' + i
     levelUl.appendChild(levelButton)
+    levelButton.addEventListener('click', callSongList)
 
     let songsContainer = document.createElement("div")
     songsContainer.classList.add('song-list')
@@ -120,7 +120,7 @@ function printSongs () {
     songsContainer.appendChild(levelOl)
 
 
-    // Print the songs themselves
+    // Print the song buttons
     for(let j=0; j<window['level' + i].length; j++) {
       let song = document.createElement("li");
       song.classList.add("song-button")
@@ -130,12 +130,56 @@ function printSongs () {
       song.textContent = songSrc.title
 
       levelOl.appendChild(song)
+      song.addEventListener('click', loadSong)
 
     }
   }
 }
 
 
+
+// CLICK EVENTS TO SHOW / HIDE LEVELS AND SONGS 
+
+let backButton = document.getElementById("back-button");
+backButton.addEventListener("click", hideSongList);
+function hideSongList() {
+  for (let k = 0; k < songList.length; k++) {
+    songList[k].classList.remove("active-song-list") 
+  }
+  levelList.classList.remove("inactive-level-list");
+  backButton.classList.remove("back-button-active");
+}
+function callSongList(e) {
+  levelList.classList.add("inactive-level-list");
+  for (let j = 0; j < songList.length; j++) {
+    if (songList[j].id == ("level-" + (this.id))) {
+      songList[j].classList.add("active-song-list");
+    }
+  }
+  backButton.classList.add("back-button-active")    
+}
+function loadSong(e) {
+  splash.style.display = "none";
+  iframe.style.width = "100%";
+  iframe.style.height = "100%";
+  iframe.src = this.dataset.pdf + "#zoom=118";
+  videoLink.href = this.dataset.video;
+  pdfLink.href = this.dataset.pdf +"#zoom=83";
+}
+
+
+
+
+/* TO-DO:
+
+      1. Log in/out buttons should appear disappear appropriately.
+      2. Log out should eliminate all data from the front end, unsubscribe, and reset for new login.
+      3. Song ID's should be imbedded in their html buttons for submission to server.
+      4. User should have a button to submit a song for review.
+      5. Song id's should be checked in each array and icons should be updated to indicate status
+
+
+*/
 // Logic on Sign in & Sign out
 onAuthStateChanged(auth, async (user) => {
   // Logic for when the user logs in. If succesful and profile exists, get userLevel & song arrays 
@@ -146,11 +190,12 @@ onAuthStateChanged(auth, async (user) => {
     try {
       const docSnap = await getDoc(docRef);
       if(docSnap.exists()) {
-        console.log(docSnap.data());
         userLevel = docSnap.get("Level")
-        getSongs();
-        printSongs();
-        // TO-DO:  Logic for generating page based on user's level
+        pendingSongs = docSnap.get("pendingSongs")
+        completedSongs = docSnap.get("completedSongs")
+        failedSongs = docSnap.get("failedSongs")
+        getSongs()
+        printSongs()
     } else {
       await setDoc(doc(db, "userProfiles", userID), {
         level: 1,
@@ -174,15 +219,51 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 
+
+
+
+
+
+// Log in.
+const loginButton = document.getElementById("googleSignIn")
+const logoutButton = document.getElementById("signoutButton")
+
+
+//
+loginButton.addEventListener('click', () => {
+  signInWithPopup(auth, provider)
+  loginButton.classList.add('hidden')
+  logoutButton.classList.add('show')
+  console.log('logged in:', auth)
+  })
+
+
+logoutButton.addEventListener('click', () => {
+  signOut(auth)
+  .then(() => {
+    console.log('logged out')
+    loginButton.classList.add('show')
+    logoutButton.classList.remove('show')
+  })
+})
+
+
+
+
+
+
+
+
+
+
+
 //  OLD PAGE LOGIC BELOW V V V V V
 
 // Variables
 
 let levelList = document.getElementById("level-list");
-let levelButton = document.getElementsByClassName("level-button");
 let songList = document.getElementsByClassName("song-list");
-let songButton = document.getElementsByClassName("song-button")
-let backButton = document.getElementById("back-button");
+
 let iframe = document.getElementById("iframe");
 let splash = document.getElementById("splash");
 let videoLink = document.getElementById("video-link");
@@ -190,47 +271,3 @@ let pdfLink = document.getElementById("pdf-link");
 
 
 
-// Click Events
-
-backButton.addEventListener("click", hideSongList);
-
-for (let i = 0; i < levelButton.length; i++) {
-  levelButton[i].addEventListener("click", callSongList);
-}
-
-for (let l = 0; l < songButton.length; l++) {
-  songButton[l].addEventListener("click", loadSong);
-}
-
-
-
-// Functions
-
-function callSongList(e) {
-  levelList.classList.add("inactive-level-list");
-  for (let j = 0; j < songList.length; j++) {
-    if (songList[j].id == ("level-" + (this.id))) {
-      songList[j].classList.add("active-song-list");
-    }
-  }
-  backButton.classList.add("back-button-active")    
-}
-
-
-function hideSongList() {
-  for (let k = 0; k < songList.length; k++) {
-    songList[k].classList.remove("active-song-list") 
-  }
-  levelList.classList.remove("inactive-level-list");
-  backButton.classList.remove("back-button-active");
-}
-
-
-function loadSong(e) {
-  splash.style.display = "none";
-  iframe.style.width = "100%";
-  iframe.style.height = "100%";
-  iframe.src = this.dataset.pdf + "#zoom=118";
-  videoLink.href = this.dataset.video;
-  pdfLink.href = this.dataset.pdf +"#zoom=83";
-}
