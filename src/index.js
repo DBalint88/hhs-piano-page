@@ -43,6 +43,24 @@ Don't touch anything above this line.
 */
 
 
+let levelList = document.getElementById("level-list");
+let songList = document.getElementsByClassName("song-list");
+
+let iframe = document.getElementById("iframe");
+let splash = document.getElementById("splash");
+let videoLink = document.getElementById("video-link");
+let pdfLink = document.getElementById("pdf-link");
+
+
+
+let experimental = document.createElement('p')
+experimental.textContent = 'this is my experimental p'
+splash.appendChild(experimental)
+
+splash.removeChild(experimental)
+
+splash.appendChild(experimental)
+
 
 
 let userID = ''
@@ -69,9 +87,17 @@ const songsRef = collection(db, 'songs')
 
 // FETCH USER DATA FROM SERVER -> LOCAL
 
-function getUserData(docsnap) {
-  
+function getUserData(docSnap) {
+  userLevel = docSnap.get("Level")
+  pendingSongs = docSnap.get("pendingSongs")
+  completedSongs = docSnap.get("completedSongs")
+  failedSongs = docSnap.get("failedSongs")
+  console.log(userLevel)
+  console.log(pendingSongs)
+  console.log(completedSongs)
+  console.log(failedSongs)
 }
+
 
 
 // FETCH SONGS APPROPRIATE TO THE USER'S LEVEL
@@ -180,7 +206,32 @@ function loadSong(e) {
 
 
 */
-// Logic on Sign in & Sign out
+
+
+// LOGGIN IN & LOGGIN OUT
+const loginButton = document.getElementById("googleSignIn")
+const logoutButton = document.getElementById("signoutButton")
+const loadingGif = document.getElementById("loading-gif")
+
+
+//
+loginButton.addEventListener('click', () => {
+  signInWithPopup(auth, provider)
+  loginButton.style.display = 'none'
+  loadingGif.style.display = 'block'
+  })
+
+
+logoutButton.addEventListener('click', () => {
+  signOut(auth)
+  .then(() => {
+    console.log('logged out')
+    loginButton.style.display = 'flex'
+    logoutButton.style.display = 'none'
+  })
+})
+
+
 onAuthStateChanged(auth, async (user) => {
   // Logic for when the user logs in. If succesful and profile exists, get userLevel & song arrays 
   if (user) {
@@ -190,12 +241,11 @@ onAuthStateChanged(auth, async (user) => {
     try {
       const docSnap = await getDoc(docRef);
       if(docSnap.exists()) {
-        userLevel = docSnap.get("Level")
-        pendingSongs = docSnap.get("pendingSongs")
-        completedSongs = docSnap.get("completedSongs")
-        failedSongs = docSnap.get("failedSongs")
+        getUserData(docSnap)
         getSongs()
         printSongs()
+        loadingGif.style.display = 'none'
+        logoutButton.style.display = 'block'
     } else {
       await setDoc(doc(db, "userProfiles", userID), {
         level: 1,
@@ -213,6 +263,7 @@ onAuthStateChanged(auth, async (user) => {
     }
     
   } else {
+    console.log('user signed out (from onAuthStateChanged)')
     // User is signed out
     // ...
   }
@@ -224,28 +275,7 @@ onAuthStateChanged(auth, async (user) => {
 
 
 
-// Log in.
-const loginButton = document.getElementById("googleSignIn")
-const logoutButton = document.getElementById("signoutButton")
 
-
-//
-loginButton.addEventListener('click', () => {
-  signInWithPopup(auth, provider)
-  loginButton.classList.add('hidden')
-  logoutButton.classList.add('show')
-  console.log('logged in:', auth)
-  })
-
-
-logoutButton.addEventListener('click', () => {
-  signOut(auth)
-  .then(() => {
-    console.log('logged out')
-    loginButton.classList.add('show')
-    logoutButton.classList.remove('show')
-  })
-})
 
 
 
@@ -261,13 +291,7 @@ logoutButton.addEventListener('click', () => {
 
 // Variables
 
-let levelList = document.getElementById("level-list");
-let songList = document.getElementsByClassName("song-list");
 
-let iframe = document.getElementById("iframe");
-let splash = document.getElementById("splash");
-let videoLink = document.getElementById("video-link");
-let pdfLink = document.getElementById("pdf-link");
 
 
 
