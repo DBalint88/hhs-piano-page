@@ -49,20 +49,8 @@ let iframe = document.getElementById("iframe");
 let splash = document.getElementById("splash");
 let videoLink = document.getElementById("video-link");
 let pdfLink = document.getElementById("pdf-link");
-
-
-
-let experimental = document.createElement('p')
-experimental.textContent = 'this is my experimental p'
-splash.appendChild(experimental)
-
-splash.removeChild(experimental)
-
-splash.appendChild(experimental)
-
-
-
-
+let homeButton = document.getElementById("home-button");
+let backButton = document.getElementById("back-button");
 
 
 
@@ -191,8 +179,10 @@ function printSongs () {
 
 // CLICK EVENTS TO SHOW / HIDE LEVELS AND SONGS 
 
-let backButton = document.getElementById("back-button");
+
 backButton.addEventListener("click", hideSongList);
+homeButton.addEventListener("click", goHome);
+
 function hideSongList() {
   for (let k = 0; k < songList.length; k++) {
     songList[k].classList.remove("active-song-list") 
@@ -217,14 +207,21 @@ function loadSong(e) {
   videoLink.href = this.dataset.video;
   pdfLink.href = this.dataset.pdf +"#zoom=83";
 }
+function goHome() {
+  console.log('homebutton')
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  videoLink.href = ''
+  pdfLink.href = ''
+  splash.style.display = "block";
+}
 
 
 
 
 /* TO-DO:
 
-      2. Log out should eliminate all data from the front end, unsubscribe, and reset for new login.
-      3. Song ID's should be imbedded in their html buttons for submission to server.
+      3. Need a Home button to get back to the splash page.
       4. User should have a button to submit a song for review.
       5. Song id's should be checked in each array and icons should be updated to indicate status
 
