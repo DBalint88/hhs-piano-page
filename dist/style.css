@@ -16,7 +16,7 @@ body {
   margin: auto;
   height: 3rem;
   width: 12rem;
-  display: flex;
+  display: none;
   justify-content: space-around;
   align-items: center;
 }
@@ -28,6 +28,8 @@ body {
 #signoutButton {
   margin: auto;
   display: none;
+  height: 3rem;
+  width: 12rem;
 }
 
 #loading-gif {

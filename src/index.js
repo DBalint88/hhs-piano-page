@@ -43,7 +43,6 @@ Don't touch anything above this line.
 */
 
 
-let levelList = document.getElementById("level-list");
 let songList = document.getElementsByClassName("song-list");
 
 let iframe = document.getElementById("iframe");
@@ -63,19 +62,15 @@ splash.appendChild(experimental)
 
 
 
-let userID = ''
-let pendingSongs = []
-let completedSongs = []
-let failedSongs = []
-let userLevel;
-const songs = []
+
 
 
 
 // NAV ELEMENT ANCHORS
 
 const navListWrapper = document.getElementById("nav-list-wrapper")
-const levelUl = document.getElementById("level-ul")
+let levelList
+let levelUl
 
 
 
@@ -86,6 +81,13 @@ const songsRef = collection(db, 'songs')
 
 
 // FETCH USER DATA FROM SERVER -> LOCAL
+
+let userID = ''
+let pendingSongs = []
+let completedSongs = []
+let failedSongs = []
+let userLevel;
+let songs = []
 
 function getUserData(docSnap) {
   userLevel = docSnap.get("Level")
@@ -100,6 +102,22 @@ function getUserData(docSnap) {
 
 
 
+// CLEAR DATA ON LOG OUT
+
+function clearData() {
+  while (navListWrapper.firstChild) {
+    navListWrapper.removeChild(navListWrapper.firstChild)
+  }
+  userID = ''
+  pendingSongs = []
+  completedSongs = []
+  failedSongs = []
+  userLevel = null;
+  songs = []
+}
+
+
+
 // FETCH SONGS APPROPRIATE TO THE USER'S LEVEL
 
 async function getSongs() {
@@ -109,12 +127,11 @@ async function getSongs() {
     await getDocs(q)
     .then((snapshot) => {
       snapshot.docs.forEach((doc) => {
-        window['level' + i].push({ ...doc.data() })
+        window['level' + i].push({ ...doc.data(), id: doc.id })
       })
       songs.push(window['level' + i])
     })
   }
-  printSongs();
 }
 
 
@@ -122,6 +139,13 @@ async function getSongs() {
 // GENERATE THE SONG CONTENT TO THE PAGE
 
 function printSongs () {
+  levelList = document.createElement('div')
+  levelList.setAttribute('id', 'level-list')
+  levelUl = document.createElement('ul')
+  levelUl.setAttribute('id', 'level-ul')
+  navListWrapper.appendChild(levelList)
+  levelList.appendChild(levelUl)
+
   for (let i=1; i <= songs.length; i++) {
 
     // Print the level list
@@ -153,6 +177,7 @@ function printSongs () {
       let songSrc = songs[i-1][j]
       song.setAttribute("data-pdf", songSrc.image)
       song.setAttribute("data-video", songSrc.youtube)
+      song.setAttribute("data-fbref", songSrc.id)
       song.textContent = songSrc.title
 
       levelOl.appendChild(song)
@@ -198,7 +223,6 @@ function loadSong(e) {
 
 /* TO-DO:
 
-      1. Log in/out buttons should appear disappear appropriately.
       2. Log out should eliminate all data from the front end, unsubscribe, and reset for new login.
       3. Song ID's should be imbedded in their html buttons for submission to server.
       4. User should have a button to submit a song for review.
@@ -236,13 +260,14 @@ onAuthStateChanged(auth, async (user) => {
   // Logic for when the user logs in. If succesful and profile exists, get userLevel & song arrays 
   if (user) {
     // Refer to the userProfile with the same ID as the user.
+    loginButton.style.display = 'none'
     userID = user.uid
     const docRef = doc(db, "userProfiles", userID)
     try {
       const docSnap = await getDoc(docRef);
       if(docSnap.exists()) {
         getUserData(docSnap)
-        getSongs()
+        await getSongs()
         printSongs()
         loadingGif.style.display = 'none'
         logoutButton.style.display = 'block'
@@ -264,6 +289,9 @@ onAuthStateChanged(auth, async (user) => {
     
   } else {
     console.log('user signed out (from onAuthStateChanged)')
+    loginButton.style.display = 'flex'
+    logoutButton.style.display = 'none'
+    clearData()
     // User is signed out
     // ...
   }
