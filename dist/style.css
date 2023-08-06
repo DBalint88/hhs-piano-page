@@ -241,3 +241,7 @@ iframe {
   height: 0;
   border-radius: 1rem;
 }
+
+.status-icon {
+  height: .2rem;
+}

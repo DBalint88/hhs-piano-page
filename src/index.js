@@ -168,7 +168,14 @@ function printSongs () {
       song.setAttribute("data-fbref", songSrc.id)
       song.textContent = songSrc.title
 
+      let statusIcon = document.createElement('img')
+      statusIcon.setAttribute('src', 'images/default-status-icon.png')
+      statusIcon.setAttribute('data-fbref', songSrc.id)
+      statusIcon.classList.add('status-icon')
+
+
       levelOl.appendChild(song)
+      song.appendChild(statusIcon)
       song.addEventListener('click', loadSong)
 
     }
