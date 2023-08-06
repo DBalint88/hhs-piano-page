@@ -26,6 +26,8 @@ const firebaseConfig = {
 };
 
 
+
+
 //init firebase app
 const app = initializeApp(firebaseConfig)
 
@@ -53,7 +55,6 @@ let homeButton = document.getElementById("home-button");
 let backButton = document.getElementById("back-button");
 
 
-
 // NAV ELEMENT ANCHORS
 
 const navListWrapper = document.getElementById("nav-list-wrapper")
@@ -66,6 +67,50 @@ let levelUl
 const usersRef = collection(db, 'userProfiles')
 const songsRef = collection(db, 'songs')
 
+// Temporary form to test song completion
+
+const completionForm = document.getElementById("completion-form")
+const pendingForm = document.getElementById("pending-form")
+const failureForm = document.getElementById("failure-form")
+
+failureForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const docRef = doc(db, 'userProfiles', userID)
+  failedSongs.push(failureForm.failed.value)
+  await updateDoc(docRef, {
+    failedSongs: failedSongs
+  })
+  const docSnap = await getDoc(docRef);
+      if(docSnap.exists()) {
+        getUserData(docSnap)
+      }
+})
+
+pendingForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const docRef = doc(db, 'userProfiles', userID)
+  pendingSongs.push(pendingForm.pending.value)
+  await updateDoc(docRef, {
+    pendingSongs: pendingSongs
+  })
+  const docSnap = await getDoc(docRef);
+      if(docSnap.exists()) {
+        getUserData(docSnap)
+      }
+})
+
+completionForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const docRef = doc(db, 'userProfiles', userID)
+  completedSongs.push(completionForm.completed.value)
+  await updateDoc(docRef, {
+    completedSongs: completedSongs
+  })
+  const docSnap = await getDoc(docRef);
+      if(docSnap.exists()) {
+        getUserData(docSnap)
+      }
+})
 
 
 // FETCH USER DATA FROM SERVER -> LOCAL
@@ -168,10 +213,21 @@ function printSongs () {
       song.setAttribute("data-fbref", songSrc.id)
       song.textContent = songSrc.title
 
+      // Print the status icons
+      
       let statusIcon = document.createElement('img')
       statusIcon.setAttribute('src', 'images/default-status-icon.png')
       statusIcon.setAttribute('data-fbref', songSrc.id)
       statusIcon.classList.add('status-icon')
+      if (completedSongs.includes(songSrc.id)) {
+        statusIcon.style.setProperty('background-color', 'lime')
+      }
+      if (pendingSongs.includes(songSrc.id)) {
+        statusIcon.style.setProperty('background-color', 'yellow')
+      }
+      if (failedSongs.includes(songSrc.id)) {
+        statusIcon.style.setProperty('background-color', 'red')
+      }
 
 
       levelOl.appendChild(song)

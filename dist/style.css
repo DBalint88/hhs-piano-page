@@ -243,5 +243,7 @@ iframe {
 }
 
 .status-icon {
-  height: .2rem;
+  height: .7rem;
+  margin-left: .5rem;
+  border-radius: 50%;
 }
