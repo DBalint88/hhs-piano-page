@@ -80,10 +80,8 @@ failureForm.addEventListener('submit', async (e) => {
   await updateDoc(docRef, {
     failedSongs: failedSongs
   })
-  const docSnap = await getDoc(docRef);
-      if(docSnap.exists()) {
-        getUserData(docSnap)
-      }
+  failureForm.reset()
+
 })
 
 pendingForm.addEventListener('submit', async (e) => {
@@ -93,10 +91,7 @@ pendingForm.addEventListener('submit', async (e) => {
   await updateDoc(docRef, {
     pendingSongs: pendingSongs
   })
-  const docSnap = await getDoc(docRef);
-      if(docSnap.exists()) {
-        getUserData(docSnap)
-      }
+  pendingForm.reset()
 })
 
 completionForm.addEventListener('submit', async (e) => {
@@ -106,10 +101,7 @@ completionForm.addEventListener('submit', async (e) => {
   await updateDoc(docRef, {
     completedSongs: completedSongs
   })
-  const docSnap = await getDoc(docRef);
-      if(docSnap.exists()) {
-        getUserData(docSnap)
-      }
+  completionFrom.reset()
 })
 
 
@@ -123,21 +115,16 @@ let userLevel;
 let songs = []
 
 function getUserData(docSnap) {
-  userLevel = docSnap.get("Level")
+  userLevel = docSnap.get("level")
   pendingSongs = docSnap.get("pendingSongs")
   completedSongs = docSnap.get("completedSongs")
   failedSongs = docSnap.get("failedSongs")
-  console.log(userLevel)
-  console.log(pendingSongs)
-  console.log(completedSongs)
-  console.log(failedSongs)
 }
 
 
-
 // CLEAR DATA ON LOG OUT
-
 function clearData() {
+  backButton.classList.remove("back-button-active")
   while (navListWrapper.firstChild) {
     navListWrapper.removeChild(navListWrapper.firstChild)
   }
@@ -150,9 +137,7 @@ function clearData() {
 }
 
 
-
 // FETCH SONGS APPROPRIATE TO THE USER'S LEVEL
-
 async function getSongs() {
   for (let i=1; i <= userLevel; i++) {
     window['level' + i] = []
@@ -217,21 +202,12 @@ function printSongs () {
       
       let statusIcon = document.createElement('img')
       statusIcon.setAttribute('src', 'images/default-status-icon.png')
-      statusIcon.setAttribute('data-fbref', songSrc.id)
+      statusIcon.setAttribute('id', songSrc.id)
       statusIcon.classList.add('status-icon')
-      if (completedSongs.includes(songSrc.id)) {
-        statusIcon.style.setProperty('background-color', 'lime')
-      }
-      if (pendingSongs.includes(songSrc.id)) {
-        statusIcon.style.setProperty('background-color', 'yellow')
-      }
-      if (failedSongs.includes(songSrc.id)) {
-        statusIcon.style.setProperty('background-color', 'red')
-      }
-
 
       levelOl.appendChild(song)
       song.appendChild(statusIcon)
+      updateStatusLights()
       song.addEventListener('click', loadSong)
 
     }
@@ -240,9 +216,24 @@ function printSongs () {
 
 
 
+// UPDATE THE STATUS LIGHTS
+function updateStatusLights() {
+  let statusIcons = Array.from(document.getElementsByClassName('status-icon'))
+  statusIcons.forEach((el) => {
+    if (completedSongs.includes(el.id)) {
+      el.style.setProperty('background-color', 'lime')
+    }
+    if (pendingSongs.includes(el.id)) {
+      el.style.setProperty('background-color', 'yellow')
+    }
+    if (failedSongs.includes(el.id)) {
+      el.style.setProperty('background-color', 'red')
+    }
+  })
+}
+
+
 // CLICK EVENTS TO SHOW / HIDE LEVELS AND SONGS 
-
-
 backButton.addEventListener("click", hideSongList);
 homeButton.addEventListener("click", goHome);
 
@@ -283,12 +274,9 @@ function goHome() {
 
 
 /* TO-DO:
-
-      3. Need a Home button to get back to the splash page.
-      4. User should have a button to submit a song for review.
-      5. Song id's should be checked in each array and icons should be updated to indicate status
-
-
+      1. Extract status light logic to its own function.  Run on userProfile Snapshot
+      2. Implement user submit for review button
+      3. Set up weekly quota counter (/60)
 */
 
 
@@ -319,30 +307,38 @@ logoutButton.addEventListener('click', () => {
 onAuthStateChanged(auth, async (user) => {
   // Logic for when the user logs in. If succesful and profile exists, get userLevel & song arrays 
   if (user) {
-    // Refer to the userProfile with the same ID as the user.
     loginButton.style.display = 'none'
+
+    // Refer to the userProfile with the same ID as the user.
     userID = user.uid
     const docRef = doc(db, "userProfiles", userID)
+
     try {
-      const docSnap = await getDoc(docRef);
-      if(docSnap.exists()) {
-        getUserData(docSnap)
-        await getSongs()
-        printSongs()
-        loadingGif.style.display = 'none'
-        logoutButton.style.display = 'block'
-    } else {
-      await setDoc(doc(db, "userProfiles", userID), {
-        level: 1,
-        completedSongs: [],
-        pendingSongs: [],
-        failedSongs: []
+      // Subscribe to snapshots of userProfile doc
+
+      let docSnap = await getDoc(docRef);
+      if(!docSnap.exists()) {
+        await setDoc(doc(db, "userProfiles", userID), {
+          level: 1,
+          completedSongs: [],
+          pendingSongs: [],
+          failedSongs: []
+        })
+        docSnap = await getDoc(docRef);
+      }
+
+      const unsubProfiles = onSnapshot(docRef, (doc) => {
+        updateStatusLights()
       })
 
+      loadingGif.style.display = 'none'
+      logoutButton.style.display = 'block'
+
+      getUserData(docSnap)
+      await getSongs()
+      printSongs()
+
     }
-    
-    
-  }
     catch(error) {
       console.log(error)
     }
