@@ -67,7 +67,8 @@ let levelUl
 const usersRef = collection(db, 'userProfiles')
 const songsRef = collection(db, 'songs')
 
-// Temporary form to test song completion
+
+// Temporary forms to test song completion
 
 const completionForm = document.getElementById("completion-form")
 const pendingForm = document.getElementById("pending-form")
@@ -274,8 +275,8 @@ function goHome() {
 
 
 /* TO-DO:
-      1. Extract status light logic to its own function.  Run on userProfile Snapshot
-      2. Implement user submit for review button
+      1. Implement user submit for review button
+      2. Implement logic so if a user has completed a level, their userLevel++
       3. Set up weekly quota counter (/60)
 */
 
@@ -296,11 +297,6 @@ loginButton.addEventListener('click', () => {
 
 logoutButton.addEventListener('click', () => {
   signOut(auth)
-  .then(() => {
-    console.log('logged out')
-    loginButton.style.display = 'flex'
-    logoutButton.style.display = 'none'
-  })
 })
 
 
@@ -327,7 +323,7 @@ onAuthStateChanged(auth, async (user) => {
         docSnap = await getDoc(docRef);
       }
 
-      const unsubProfiles = onSnapshot(docRef, (doc) => {
+      onSnapshot(docRef, (doc) => {
         updateStatusLights()
       })
 
@@ -348,8 +344,6 @@ onAuthStateChanged(auth, async (user) => {
     loginButton.style.display = 'flex'
     logoutButton.style.display = 'none'
     clearData()
-    // User is signed out
-    // ...
   }
 });
 
