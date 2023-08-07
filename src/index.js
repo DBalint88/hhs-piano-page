@@ -37,11 +37,9 @@ const provider = new GoogleAuthProvider();
 // DEFINE COLLECTION REFERENCE
 const songsRef = collection(db, 'songs')
 
-/*
-^^^^^^^^^^^^
-Don't touch anything above this line.
 
-*/
+// * / * / * / * / Don't touch anything above this line!! / * / * / * / * //
+
 
 /* TO-DO:
       1. Implement user submit for review button
@@ -58,9 +56,12 @@ let songList = document.getElementsByClassName("song-list");
 let iframe = document.getElementById("iframe");
 let splash = document.getElementById("splash");
 let videoLink = document.getElementById("video-link");
+let videoIcon = document.getElementById("yt-icon")
 let pdfLink = document.getElementById("pdf-link");
+let pdfIcon = document.getElementById("pdf-icon")
 let homeButton = document.getElementById("home-button");
 let backButton = document.getElementById("back-button");
+let submitButton = document.getElementById("submit-button")
 const navListWrapper = document.getElementById("nav-list-wrapper")
 let levelList
 let levelUl
@@ -201,22 +202,26 @@ function printSongs () {
 function updateStatusLights() {
   let statusIcons = Array.from(document.getElementsByClassName('status-icon'))
   statusIcons.forEach((el) => {
+    el.style.setProperty('background-color', 'black')
     if (completedSongs.includes(el.id)) {
       el.style.setProperty('background-color', 'lime')
     }
-    if (pendingSongs.includes(el.id)) {
-      el.style.setProperty('background-color', 'yellow')
-    }
     if (failedSongs.includes(el.id)) {
       el.style.setProperty('background-color', 'red')
+    }
+    if (pendingSongs.includes(el.id)) {
+      el.style.setProperty('background-color', 'yellow')
     }
   })
 }
 
 
-// CLICK EVENTS TO SHOW / HIDE LEVELS AND SONGS 
+// CLICK EVENTS TO SHOW / HIDE LEVELS AND SONGS, AND SUBMIT A SONG FOR REVIEW
 backButton.addEventListener("click", hideSongList);
 homeButton.addEventListener("click", goHome);
+submitButton.addEventListener("click", submitSong);
+let currentSongFbref = ''
+let currentSongTitle = ''
 
 function hideSongList() {
   for (let k = 0; k < songList.length; k++) {
@@ -241,7 +246,43 @@ function loadSong(e) {
   iframe.src = this.dataset.pdf + "#zoom=118";
   videoLink.href = this.dataset.video;
   pdfLink.href = this.dataset.pdf +"#zoom=83";
+  currentSongFbref = this.dataset.fbref
+  currentSongTitle = this.textContent
+  updateButtons();
+  
 }
+
+function updateButtons() {
+  if (currentSongFbref == '') {
+    videoIcon.style.opacity = ".2"
+    videoLink.style.cursor = "not-allowed"
+    pdfIcon.style.opacity = ".2"
+    pdfLink.style.cursor = "not-allowed"
+    submitButton.style.opacity = ".2"
+    submitButton.style.cursor = "not-allowed"
+  } else {
+    videoIcon.style.opacity = "1"
+    videoLink.style.cursor = "pointer"
+    pdfIcon.style.opacity = "1"
+    pdfLink.style.cursor = "pointer"
+    if (completedSongs.includes(currentSongFbref)) {
+      submitButton.src = "images/upload-icon.png"
+      submitButton.style.opacity = ".2"
+      submitButton.style.cursor = "not-allowed"
+    } else if (pendingSongs.includes(currentSongFbref)) {
+      submitButton.src = "images/undo-icon.png"
+      submitButton.style.opacity = "1"
+      submitButton.style.cursor = "pointer"
+    } else {
+      submitButton.src = "images/upload-icon.png"
+      submitButton.style.opacity = "1"
+      submitButton.style.cursor = "pointer"
+    }
+  }
+
+  
+}
+
 function goHome() {
   console.log('homebutton')
   iframe.style.width = '0';
@@ -249,7 +290,42 @@ function goHome() {
   videoLink.href = ''
   pdfLink.href = ''
   splash.style.display = "block";
+  currentSongFbref = ''
+  currentSongTitle = ''
+  updateButtons();
 }
+
+function submitSong(e) {
+  if (pendingSongs.includes(currentSongFbref)) {
+    if (confirm("Are you sure you want to unsubmit " + currentSongTitle + "?")) {
+      const docRef = doc(db, 'userProfiles', userID)
+      pendingSongs.splice(pendingSongs.indexOf(currentSongFbref), 1)
+      updateDoc(docRef, {
+      pendingSongs: pendingSongs
+      })
+    }
+
+  } else if (failedSongs.includes(currentSongFbref)) {
+    if (confirm("Are you sure you want to resubmit " + currentSongTitle + "?")) {
+      const docRef = doc(db, 'userProfiles', userID)
+      pendingSongs.push(currentSongFbref)
+      updateDoc(docRef, {
+      pendingSongs: pendingSongs
+      })
+    }
+
+  } else if (!completedSongs.includes(currentSongFbref)) {
+    if (confirm("Are you sure you want to submit " + currentSongTitle + "?")) {
+      const docRef = doc(db, 'userProfiles', userID)
+      pendingSongs.push(currentSongFbref)
+      updateDoc(docRef, {
+      pendingSongs: pendingSongs
+      })
+    }
+  }
+  
+}
+
 
 
 
@@ -306,7 +382,9 @@ onAuthStateChanged(auth, async (user) => {
       }
 
       onSnapshot(docRef, (doc) => {
+        getUserData(doc)
         updateStatusLights()
+        updateButtons()
       })
 
       loadingGif.style.display = 'none'

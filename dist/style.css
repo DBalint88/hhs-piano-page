@@ -58,7 +58,7 @@ body {
     "nav main"
     "footer main";
   gap: .5rem;
-  background-color: green;
+  background-color: rgb(0, 70, 0);
   width: 100%;
   max-width: 1349px;
   min-height: 100vh;
@@ -222,13 +222,18 @@ footer div {
   align-items: center;
 }
 
-#home-button {
+#home-button, #submit-button {
   width: 40%;
   cursor: pointer;
 }
 
 #video-link img {
   width: 55%;
+}
+
+#yt-icon, #pdf-icon, #submit-button  {
+  opacity: .2;
+  cursor: not-allowed;
 }
 
 #splash {
