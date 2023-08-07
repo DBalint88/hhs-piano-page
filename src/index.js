@@ -25,12 +25,8 @@ const firebaseConfig = {
     appId: "1:324874631780:web:afd0e3f3dd50ddd76a7d71"
 };
 
-
-
-
 //init firebase app
 const app = initializeApp(firebaseConfig)
-
 
 // init services
 const db = getFirestore(app)
@@ -38,35 +34,36 @@ const auth = getAuth()
 const user = auth.currentUser
 const provider = new GoogleAuthProvider();
 
+// DEFINE COLLECTION REFERENCE
+const songsRef = collection(db, 'songs')
+
 /*
 ^^^^^^^^^^^^
 Don't touch anything above this line.
 
 */
 
+/* TO-DO:
+      1. Implement user submit for review button
+      1a. Submission button (& yt, pdf, home) should grey inactive appropriately.
+      2. Implement logic so if a user has completed a level, their userLevel++
+      3. Set up weekly quota counter (/60)
+      4. Set up back end teacher view to review submissions
+      5. Set auth rules, restrict domain to hamden.org
+*/
+
+// NAV ELEMENT ANCHORS
 
 let songList = document.getElementsByClassName("song-list");
-
 let iframe = document.getElementById("iframe");
 let splash = document.getElementById("splash");
 let videoLink = document.getElementById("video-link");
 let pdfLink = document.getElementById("pdf-link");
 let homeButton = document.getElementById("home-button");
 let backButton = document.getElementById("back-button");
-
-
-// NAV ELEMENT ANCHORS
-
 const navListWrapper = document.getElementById("nav-list-wrapper")
 let levelList
 let levelUl
-
-
-
-// DEFINE COLLECTIONS REFERENCES
-const usersRef = collection(db, 'userProfiles')
-const songsRef = collection(db, 'songs')
-
 
 // Temporary forms to test song completion
 
@@ -84,7 +81,6 @@ failureForm.addEventListener('submit', async (e) => {
   failureForm.reset()
 
 })
-
 pendingForm.addEventListener('submit', async (e) => {
   e.preventDefault()
   const docRef = doc(db, 'userProfiles', userID)
@@ -94,7 +90,6 @@ pendingForm.addEventListener('submit', async (e) => {
   })
   pendingForm.reset()
 })
-
 completionForm.addEventListener('submit', async (e) => {
   e.preventDefault()
   const docRef = doc(db, 'userProfiles', userID)
@@ -123,20 +118,6 @@ function getUserData(docSnap) {
 }
 
 
-// CLEAR DATA ON LOG OUT
-function clearData() {
-  backButton.classList.remove("back-button-active")
-  while (navListWrapper.firstChild) {
-    navListWrapper.removeChild(navListWrapper.firstChild)
-  }
-  userID = ''
-  pendingSongs = []
-  completedSongs = []
-  failedSongs = []
-  userLevel = null;
-  songs = []
-}
-
 
 // FETCH SONGS APPROPRIATE TO THE USER'S LEVEL
 async function getSongs() {
@@ -156,7 +137,6 @@ async function getSongs() {
 
 
 // GENERATE THE SONG CONTENT TO THE PAGE
-
 function printSongs () {
   levelList = document.createElement('div')
   levelList.setAttribute('id', 'level-list')
@@ -273,12 +253,20 @@ function goHome() {
 
 
 
+// CLEAR DATA ON LOG OUT
+function clearData() {
+  backButton.classList.remove("back-button-active")
+  while (navListWrapper.firstChild) {
+    navListWrapper.removeChild(navListWrapper.firstChild)
+  }
+  userID = ''
+  pendingSongs = []
+  completedSongs = []
+  failedSongs = []
+  userLevel = null;
+  songs = []
+}
 
-/* TO-DO:
-      1. Implement user submit for review button
-      2. Implement logic so if a user has completed a level, their userLevel++
-      3. Set up weekly quota counter (/60)
-*/
 
 
 // LOGGIN IN & LOGGIN OUT
@@ -286,20 +274,14 @@ const loginButton = document.getElementById("googleSignIn")
 const logoutButton = document.getElementById("signoutButton")
 const loadingGif = document.getElementById("loading-gif")
 
-
-//
 loginButton.addEventListener('click', () => {
   signInWithPopup(auth, provider)
   loginButton.style.display = 'none'
   loadingGif.style.display = 'block'
   })
-
-
 logoutButton.addEventListener('click', () => {
   signOut(auth)
 })
-
-
 onAuthStateChanged(auth, async (user) => {
   // Logic for when the user logs in. If succesful and profile exists, get userLevel & song arrays 
   if (user) {
@@ -340,36 +322,9 @@ onAuthStateChanged(auth, async (user) => {
     }
     
   } else {
-    console.log('user signed out (from onAuthStateChanged)')
+    console.log('no user logged in')
     loginButton.style.display = 'flex'
     logoutButton.style.display = 'none'
     clearData()
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//  OLD PAGE LOGIC BELOW V V V V V
-
-// Variables
-
-
-
-
-
