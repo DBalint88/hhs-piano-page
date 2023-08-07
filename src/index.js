@@ -42,8 +42,6 @@ const songsRef = collection(db, 'songs')
 
 
 /* TO-DO:
-      1. Implement user submit for review button
-      1a. Submission button (& yt, pdf, home) should grey inactive appropriately.
       2. Implement logic so if a user has completed a level, their userLevel++
       3. Set up weekly quota counter (/60)
       4. Set up back end teacher view to review submissions
@@ -104,6 +102,7 @@ completionForm.addEventListener('submit', async (e) => {
 
 // FETCH USER DATA FROM SERVER -> LOCAL
 
+let username
 let userID = ''
 let pendingSongs = []
 let completedSongs = []
@@ -216,6 +215,7 @@ function updateStatusLights() {
 }
 
 
+
 // CLICK EVENTS TO SHOW / HIDE LEVELS AND SONGS, AND SUBMIT A SONG FOR REVIEW
 backButton.addEventListener("click", hideSongList);
 homeButton.addEventListener("click", goHome);
@@ -251,7 +251,21 @@ function loadSong(e) {
   updateButtons();
   
 }
+function goHome() {
+  console.log('homebutton')
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  videoLink.href = ''
+  pdfLink.href = ''
+  splash.style.display = "block";
+  currentSongFbref = ''
+  currentSongTitle = ''
+  updateButtons();
+}
 
+
+
+// CONTROL APPEARANCE OF YT, PDF, HOME, & SUBMIT BUTTONS
 function updateButtons() {
   if (currentSongFbref == '') {
     videoIcon.style.opacity = ".2"
@@ -283,18 +297,9 @@ function updateButtons() {
   
 }
 
-function goHome() {
-  console.log('homebutton')
-  iframe.style.width = '0';
-  iframe.style.height = '0';
-  videoLink.href = ''
-  pdfLink.href = ''
-  splash.style.display = "block";
-  currentSongFbref = ''
-  currentSongTitle = ''
-  updateButtons();
-}
 
+
+// HANDLE SONG SUBMISSION
 function submitSong(e) {
   if (pendingSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to unsubmit " + currentSongTitle + "?")) {
@@ -349,6 +354,7 @@ function clearData() {
 const loginButton = document.getElementById("googleSignIn")
 const logoutButton = document.getElementById("signoutButton")
 const loadingGif = document.getElementById("loading-gif")
+let splashGreeting = document.getElementById("splash-greeting")
 
 loginButton.addEventListener('click', () => {
   signInWithPopup(auth, provider)
@@ -356,6 +362,7 @@ loginButton.addEventListener('click', () => {
   loadingGif.style.display = 'block'
   })
 logoutButton.addEventListener('click', () => {
+  splashGreeting.innerText = "Please log in with your Hamden.org account."
   signOut(auth)
 })
 onAuthStateChanged(auth, async (user) => {
@@ -365,6 +372,11 @@ onAuthStateChanged(auth, async (user) => {
 
     // Refer to the userProfile with the same ID as the user.
     userID = user.uid
+    username = (user.displayName).split(" ")[0]
+    const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    const d = new Date();
+    let day = weekday[d.getDay()];
+    splashGreeting.innerText = (`Happy ${day}, ${username}! Please click a Level on the left to get started.`)
     const docRef = doc(db, "userProfiles", userID)
 
     try {
