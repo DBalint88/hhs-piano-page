@@ -372,20 +372,17 @@ onAuthStateChanged(auth, async (user) => {
 
     // Refer to the userProfile with the same ID as the user.
     userID = user.uid
-    username = (user.displayName).split(" ")[0]
-    const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    const d = new Date();
-    let day = weekday[d.getDay()];
-    splashGreeting.innerText = (`Happy ${day}, ${username}! Please click a Level on the left to get started.`)
-    const docRef = doc(db, "userProfiles", userID)
+    
 
     try {
       // Subscribe to snapshots of userProfile doc
-
+      const docRef = doc(db, "userProfiles", userID)
       let docSnap = await getDoc(docRef);
       if(!docSnap.exists()) {
         await setDoc(doc(db, "userProfiles", userID), {
           level: 1,
+          role: "student",
+          nick: "",
           completedSongs: [],
           pendingSongs: [],
           failedSongs: []
@@ -398,6 +395,19 @@ onAuthStateChanged(auth, async (user) => {
         updateStatusLights()
         updateButtons()
       })
+      
+      username = (user.displayName).split(" ")[0];  
+      let nick = await docSnap.get("nick")
+      if (!nick == "") {
+        username = nick
+      }
+
+        
+      const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+      const d = new Date();
+       let day = weekday[d.getDay()];
+      splashGreeting.innerText = (`Happy ${day}, ${username}! Please click a Level on the left to get started.`)
+      
 
       loadingGif.style.display = 'none'
       logoutButton.style.display = 'block'
