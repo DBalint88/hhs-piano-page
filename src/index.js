@@ -255,6 +255,7 @@ function loadSong(e) {
   updateButtons();
   
 }
+
 function goHome() {
   console.log('homebutton')
   iframe.style.width = '0';
@@ -273,20 +274,23 @@ function goHome() {
 function updateButtons() {
   if (currentSongFbref == '') {
     videoIcon.style.opacity = ".2"
-    videoLink.style.cursor = "not-allowed"
+    videoLink.style.pointerEvents="none"
     pdfIcon.style.opacity = ".2"
-    pdfLink.style.cursor = "not-allowed"
+    pdfLink.style.pointerEvents="none"
     submitButton.style.opacity = ".2"
-    submitButton.style.cursor = "not-allowed"
+    submitButton.style.pointerEvents="none"
   } else {
     videoIcon.style.opacity = "1"
     videoLink.style.cursor = "pointer"
+    videoLink.style.pointerEvents = "auto"
     pdfIcon.style.opacity = "1"
     pdfLink.style.cursor = "pointer"
+    pdfLink.style.pointerEvents = "auto"
+    submitButton.style.pointerEvents="auto"
     if (completedSongs.includes(currentSongFbref)) {
       submitButton.src = "images/upload-icon.png"
       submitButton.style.opacity = ".2"
-      submitButton.style.cursor = "not-allowed"
+      submitButton.style.cursor = "default"
     } else if (pendingSongs.includes(currentSongFbref)) {
       submitButton.src = "images/undo-icon.png"
       submitButton.style.opacity = "1"
