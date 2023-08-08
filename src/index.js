@@ -43,7 +43,7 @@ const songsRef = collection(db, 'songs')
 
 /* TO-DO:
       2. Implement logic so if a user has completed a level, their userLevel++
-      3. Set up weekly quota counter (/60)
+      
       4. Set up back end teacher view to review submissions
         a. This will involve downloading more information from the server, including First/Last name
         b.  ...then uploading everything to a new Collection "submissions"
@@ -67,9 +67,13 @@ let submitButton = document.getElementById("submit-button")
 const navListWrapper = document.getElementById("nav-list-wrapper")
 let levelList
 let levelUl
+const startDate = new Date('July 30, 2023')
+const todaysDate = new Date()
+const currentWeek = Math.ceil((todaysDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24 * 7))
+document.getElementById("weekid").innerText = currentWeek
 
-// Temporary forms to test song completion
-
+// // Temporary forms to test song completion
+/*
 const completionForm = document.getElementById("completion-form")
 const pendingForm = document.getElementById("pending-form")
 const failureForm = document.getElementById("failure-form")
@@ -102,7 +106,7 @@ completionForm.addEventListener('submit', async (e) => {
   })
   completionFrom.reset()
 })
-
+*/
 
 // FETCH USER DATA FROM SERVER -> LOCAL
 
@@ -112,6 +116,8 @@ let pendingSongs = []
 let completedSongs = []
 let failedSongs = []
 let userLevel;
+let handicap = 1
+let currentWeeklyScore;
 let songs = []
 
 function getUserData(docSnap) {
@@ -119,6 +125,8 @@ function getUserData(docSnap) {
   pendingSongs = docSnap.get("pendingSongs")
   completedSongs = docSnap.get("completedSongs")
   failedSongs = docSnap.get("failedSongs")
+  currentWeeklyScore = docSnap.get("currentWeeklyScore")
+  handicap = docSnap.get("handicap")
 }
 
 
@@ -178,6 +186,7 @@ function printSongs () {
       let song = document.createElement("li");
       song.classList.add("song-button")
       let songSrc = songs[i-1][j]
+      song.setAttribute("data-level", i)
       song.setAttribute("data-pdf", songSrc.image)
       song.setAttribute("data-video", songSrc.youtube)
       song.setAttribute("data-fbref", songSrc.id)
@@ -226,6 +235,8 @@ homeButton.addEventListener("click", goHome);
 submitButton.addEventListener("click", submitSong);
 let currentSongFbref = ''
 let currentSongTitle = ''
+let currentSongLevel = 0
+let currentSongValue = 0
 
 function hideSongList() {
   for (let k = 0; k < songList.length; k++) {
@@ -252,8 +263,31 @@ function loadSong(e) {
   pdfLink.href = this.dataset.pdf +"#zoom=83";
   currentSongFbref = this.dataset.fbref
   currentSongTitle = this.textContent
-  updateButtons();
-  
+  currentSongLevel = parseInt(this.dataset.level)
+  console.log("currentSongLevel = ", currentSongLevel, " which is type: ", typeof currentSongLevel)
+  currentSongValue = determineSongValue(currentSongLevel)
+  console.log("currentSongValue = ", currentSongValue, " which is type: ", typeof currentSongValue)
+  updateButtons(); 
+}
+
+
+
+//  DETERMINE POINT VALUE OF CURRENT SONG TOWARDS WEEKLY QUOTA
+function determineSongValue(x) {
+  switch (x) {
+    case 1:
+      console.log("case 1")
+      return 15 * handicap
+    case 2:
+      console.log("case 2")
+      return 20 * handicap
+    case 3:
+      console.log("case 3")
+      return 30 * handicap
+    default:
+      console.log("case default")
+      return 60
+  }
 }
 
 function goHome() {
@@ -301,8 +335,12 @@ function updateButtons() {
       submitButton.style.cursor = "pointer"
     }
   }
+}
 
-  
+function updateQuotaDisplay() {
+  document.getElementById("points-earned").innerText = currentWeeklyScore;
+
+
 }
 
 
@@ -311,28 +349,34 @@ function updateButtons() {
 function submitSong(e) {
   if (pendingSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to unsubmit " + currentSongTitle + "?")) {
+      currentWeeklyScore -= currentSongValue;
       const docRef = doc(db, 'userProfiles', userID)
       pendingSongs.splice(pendingSongs.indexOf(currentSongFbref), 1)
       updateDoc(docRef, {
-      pendingSongs: pendingSongs
+      pendingSongs: pendingSongs,
+      currentWeeklyScore: currentWeeklyScore
       })
     }
 
   } else if (failedSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to resubmit " + currentSongTitle + "?")) {
+      currentWeeklyScore += currentSongValue;
       const docRef = doc(db, 'userProfiles', userID)
       pendingSongs.push(currentSongFbref)
       updateDoc(docRef, {
-      pendingSongs: pendingSongs
+      pendingSongs: pendingSongs,
+      currentWeeklyScore: currentWeeklyScore
       })
     }
 
   } else if (!completedSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to submit " + currentSongTitle + "?")) {
+      currentWeeklyScore += currentSongValue;
       const docRef = doc(db, 'userProfiles', userID)
       pendingSongs.push(currentSongFbref)
       updateDoc(docRef, {
-      pendingSongs: pendingSongs
+      pendingSongs: pendingSongs,
+      currentWeeklyScore: currentWeeklyScore
       })
     }
   }
@@ -393,7 +437,9 @@ onAuthStateChanged(auth, async (user) => {
           nick: "",
           completedSongs: [],
           pendingSongs: [],
-          failedSongs: []
+          failedSongs: [],
+          handicap: 1,
+          currentWeeklyScore: 0
         })
         docSnap = await getDoc(docRef);
       }
@@ -402,6 +448,7 @@ onAuthStateChanged(auth, async (user) => {
         getUserData(doc)
         updateStatusLights()
         updateButtons()
+        updateQuotaDisplay()
       })
       
       username = (user.displayName).split(" ")[0];  

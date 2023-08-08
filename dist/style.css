@@ -53,10 +53,11 @@ body {
 #content-wrapper {
   display: grid;
   grid-template-columns: 1fr 3fr;
-  grid-template-rows: 8fr 2fr;
+  grid-template-rows: 8fr 1fr 1fr;
   grid-template-areas: 
     "nav main"
-    "footer main";
+    "quota main"
+    "buttons main";
   gap: .5rem;
   background-color: rgb(0, 70, 0);
   width: 100%;
@@ -192,12 +193,24 @@ li {
   margin-bottom: 1rem;
 }
 
-footer {
-  grid-area: footer;
+#quota-panel {
+  border-radius: 1rem;
+  padding: .5rem;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#quota-text {
+  font-size: 1.3rem;
+}
+#buttons-panel {
+  grid-area: buttons;
   display: grid;
-  grid-template-columns: 50% 50%;
-  grid-template-rows: 50% 50%;
-  gap: .25rem;
+  grid-template-columns: 25% 25% 25% 25%;
   border-radius: 1rem;
   padding: .5rem;
   width: 100%;
@@ -205,7 +218,7 @@ footer {
   background-color: black;
 }
 
-footer a {
+#buttons-panel a {
   
   border-radius: 1rem;
   display: flex;
@@ -213,22 +226,17 @@ footer a {
   align-items: center;
 }
 
-footer img {
-  width: 42%;
+#buttons-panel img {
+  width: 70%;
 }
-footer div {
+#buttons-panel div {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 #home-button, #submit-button {
-  width: 40%;
   cursor: pointer;
-}
-
-#video-link img {
-  width: 55%;
 }
 
 #yt-icon, #pdf-icon, #submit-button  {

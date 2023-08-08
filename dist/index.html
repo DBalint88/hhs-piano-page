@@ -37,7 +37,7 @@
           <p>All of the PDFs on this page are the work of Gil DeBenedetti @ <a href="https://gmajormusictheory.org/Freebies/freebiesFP.html">G Major Music Theory</a><p>
           <p>Used with permission.</p>
 
-          <!-- Temporary update forms: -->
+          <!-- Temporary update forms: 
           <form id="completion-form" class="tempform">
             <label for="completed"><input class="tempform" type="text" name="completed"></label>
             <button class="tempform">Complete this song</button>
@@ -50,20 +50,24 @@
             <label for="failed"><input class="tempform" type="text" name="failed"></label>
             <button class="tempform">Fail this song</button>
           </form>
-          <!-- end temp update forms -->
+
+          end temp update forms -->
 
           
           
         </div>       
       </main>
         
-        
-      <footer>
-        <a id="video-link" href="" target="_blank"><img id="yt-icon" src="images/youtube-logo.png" alt="Link to the video of the currently displayed song."></a>
-        <a id="pdf-link" href="" target="_blank"><img id="pdf-icon" src="images/pdf-icon.svg" alt="Link to video the current song externally."></a>
+      
+      <div id="quota-panel">
+        <p id="quota-text" >Week <span id="weekid"></span> Quota: <span id="points-earned"></span> / 60</p>
+      </div>
+      <div id="buttons-panel">
         <div><img id="home-button" src="images/house-icon.png" alt=""></div>
+        <a id="video-link" href="" target="_blank"><img id="yt-icon" src="images/youtube-logo.png" alt="Link to the video of the currently displayed song."></a>
+        <a id="pdf-link" href="" target="_blank"><img id="pdf-icon" src="images/pdf-icon.png" alt="Link to video the current song externally."></a>
         <div><img id="submit-button" src="images/upload-icon.png" alt=""></div>
-      </footer>
+      </div>
         
     </div>
   </body>
