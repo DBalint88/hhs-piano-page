@@ -45,6 +45,10 @@ const songsRef = collection(db, 'songs')
       2. Implement logic so if a user has completed a level, their userLevel++
       3. Set up weekly quota counter (/60)
       4. Set up back end teacher view to review submissions
+        a. This will involve downloading more information from the server, including First/Last name
+        b.  ...then uploading everything to a new Collection "submissions"
+        c. Submissions will include song title / id, first/last name, userID, and time stamp
+        
       5. Set auth rules, restrict domain to hamden.org
 */
 
