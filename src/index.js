@@ -117,7 +117,8 @@ let completedSongs = []
 let failedSongs = []
 let userLevel;
 let handicap = 1
-let currentWeeklyScore;
+let currentWeekAttempted;
+let currentWeekEarned;
 let songs = []
 
 function getUserData(docSnap) {
@@ -125,7 +126,8 @@ function getUserData(docSnap) {
   pendingSongs = docSnap.get("pendingSongs")
   completedSongs = docSnap.get("completedSongs")
   failedSongs = docSnap.get("failedSongs")
-  currentWeeklyScore = docSnap.get("currentWeeklyScore")
+  currentWeekAttempted = docSnap.get("currentWeekAttempted")
+  currentWeekEarned = docSnap.get("currentWeekEarned")
   handicap = docSnap.get("handicap")
 }
 
@@ -134,7 +136,7 @@ function getUserData(docSnap) {
 // FETCH SONGS APPROPRIATE TO THE USER'S LEVEL
 async function getSongs() {
   for (let i=1; i <= userLevel; i++) {
-    window['level' + i] = []
+    window.window['level' + i] = []
     let q = query(songsRef, where("level", "==", i), orderBy("sequence"))
     await getDocs(q)
     .then((snapshot) => {
@@ -264,9 +266,7 @@ function loadSong(e) {
   currentSongFbref = this.dataset.fbref
   currentSongTitle = this.textContent
   currentSongLevel = parseInt(this.dataset.level)
-  console.log("currentSongLevel = ", currentSongLevel, " which is type: ", typeof currentSongLevel)
   currentSongValue = determineSongValue(currentSongLevel)
-  console.log("currentSongValue = ", currentSongValue, " which is type: ", typeof currentSongValue)
   updateButtons(); 
 }
 
@@ -276,16 +276,12 @@ function loadSong(e) {
 function determineSongValue(x) {
   switch (x) {
     case 1:
-      console.log("case 1")
       return 15 * handicap
     case 2:
-      console.log("case 2")
       return 20 * handicap
     case 3:
-      console.log("case 3")
       return 30 * handicap
     default:
-      console.log("case default")
       return 60
   }
 }
@@ -337,10 +333,12 @@ function updateButtons() {
   }
 }
 
+
+
+// UPDATE THE QUOTA DISPLAY
 function updateQuotaDisplay() {
-  document.getElementById("points-earned").innerText = currentWeeklyScore;
-
-
+  document.getElementById("points-attempted").innerText = currentWeekAttempted;
+  document.getElementById("points-earned").innerText = currentWeekEarned;
 }
 
 
@@ -349,41 +347,63 @@ function updateQuotaDisplay() {
 function submitSong(e) {
   if (pendingSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to unsubmit " + currentSongTitle + "?")) {
-      currentWeeklyScore -= currentSongValue;
+      currentWeekAttempted -= currentSongValue;
       const docRef = doc(db, 'userProfiles', userID)
       pendingSongs.splice(pendingSongs.indexOf(currentSongFbref), 1)
       updateDoc(docRef, {
       pendingSongs: pendingSongs,
-      currentWeeklyScore: currentWeeklyScore
+      currentWeekAttempted: currentWeekAttempted
       })
     }
 
   } else if (failedSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to resubmit " + currentSongTitle + "?")) {
-      currentWeeklyScore += currentSongValue;
+      currentWeekAttempted += currentSongValue;
       const docRef = doc(db, 'userProfiles', userID)
       pendingSongs.push(currentSongFbref)
       updateDoc(docRef, {
       pendingSongs: pendingSongs,
-      currentWeeklyScore: currentWeeklyScore
+      currentWeekAttempted: currentWeekAttempted
       })
     }
 
   } else if (!completedSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to submit " + currentSongTitle + "?")) {
-      currentWeeklyScore += currentSongValue;
+      currentWeekAttempted += currentSongValue;
       const docRef = doc(db, 'userProfiles', userID)
       pendingSongs.push(currentSongFbref)
       updateDoc(docRef, {
       pendingSongs: pendingSongs,
-      currentWeeklyScore: currentWeeklyScore
+      currentWeekAttempted: currentWeekAttempted
       })
     }
   }
+  updateUserLevel()
   
 }
 
+// UPDATE USER'S LEVEL
+function updateUserLevel() {
+  let usersCurrentLevelSongs = []
+  for (let i = 0; i < songs.length; i++) {
+    if (songs[i].level = userLevel) {
+      usersCurrentLevelSongs.push(songs[i].id)
+    }
+    console.log("userscurrentlevelsongs: ", usersCurrentLevelSongs)
+    
+  }
+  let allCurrentLevelSongs = []
+  for (let i = 0; i < songs.length; i++) {
+    if (songs[i].level = userLevel) {
+      allCurrentLevelSongs.push(songs[i].id)
+    }
+  }
+  console.log("allcurrentlevelsongs: ", allCurrentLevelSongs)
+  if ((usersCurrentLevelSongs.sort().join(',')) == allCurrentLevelSongs.sort().join(',')) {
+    console.log("you have attempted or completed all songs in your current level.")
+  }
 
+}
 
 
 // CLEAR DATA ON LOG OUT
@@ -439,7 +459,8 @@ onAuthStateChanged(auth, async (user) => {
           pendingSongs: [],
           failedSongs: [],
           handicap: 1,
-          currentWeeklyScore: 0
+          currentWeekAttempted: 0,
+          currentWeekEarned: 0
         })
         docSnap = await getDoc(docRef);
       }

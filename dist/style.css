@@ -62,7 +62,7 @@ body {
   background-color: rgb(0, 70, 0);
   width: 100%;
   max-width: 1349px;
-  min-height: 100vh;
+  height: 100vh;
   border-radius: 1rem;
   padding: .5rem;
 
@@ -121,7 +121,7 @@ nav {
   }
 
 #nav-list-wrapper {
-  height: 90%;
+  height: 95%;
   width: 100%;
   position: relative;
   overflow-x: hidden;
@@ -142,6 +142,7 @@ nav ul li {
 
 
 #back-button {
+  margin: none;
   cursor: default;
   position: relative;
   left: 400px;
@@ -202,11 +203,13 @@ li {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
 #quota-text {
   font-size: 1.3rem;
 }
+
 #buttons-panel {
   grid-area: buttons;
   display: grid;
