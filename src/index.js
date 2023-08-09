@@ -73,7 +73,7 @@ const currentWeek = Math.ceil((todaysDate.getTime() - startDate.getTime()) / (10
 document.getElementById("weekid").innerText = currentWeek
 
 // // Temporary forms to test song completion
-/*
+
 const completionForm = document.getElementById("completion-form")
 const pendingForm = document.getElementById("pending-form")
 const failureForm = document.getElementById("failure-form")
@@ -104,9 +104,9 @@ completionForm.addEventListener('submit', async (e) => {
   await updateDoc(docRef, {
     completedSongs: completedSongs
   })
-  completionFrom.reset()
+  completionForm.reset()
 })
-*/
+
 
 // FETCH USER DATA FROM SERVER -> LOCAL
 
@@ -146,6 +146,7 @@ async function getSongs() {
       songs.push(window['level' + i])
     })
   }
+  updateUserLevel()
 }
 
 
@@ -378,31 +379,35 @@ function submitSong(e) {
       })
     }
   }
-  updateUserLevel()
-  
 }
+  
 
 // UPDATE USER'S LEVEL
-function updateUserLevel() {
-  let usersCurrentLevelSongs = []
-  for (let i = 0; i < songs.length; i++) {
-    if (songs[i].level = userLevel) {
-      usersCurrentLevelSongs.push(songs[i].id)
-    }
-    console.log("userscurrentlevelsongs: ", usersCurrentLevelSongs)
-    
-  }
-  let allCurrentLevelSongs = []
-  for (let i = 0; i < songs.length; i++) {
-    if (songs[i].level = userLevel) {
-      allCurrentLevelSongs.push(songs[i].id)
-    }
-  }
-  console.log("allcurrentlevelsongs: ", allCurrentLevelSongs)
-  if ((usersCurrentLevelSongs.sort().join(',')) == allCurrentLevelSongs.sort().join(',')) {
-    console.log("you have attempted or completed all songs in your current level.")
-  }
+// If a user's completedSongs array includes ALL of the songs with level == the user's level
+//      then their level should increment.
+// Related, but possibly a separate funtion:
+// If a user's completedSongs array U pendingSongs array includes ALL of the songs with level == user's level
+// They should be given access to the next level of songs.
 
+async function updateUserLevel() {
+
+  let allCurrentLevelSongs = []
+  songs[userLevel-1].forEach((element) => allCurrentLevelSongs.push(element.id))
+
+  let checker = (arr, target) => target.every(v => arr.includes(v));
+
+  if (checker(completedSongs, allCurrentLevelSongs)) {
+    userLevel++
+    const docRef = doc(db, 'userProfiles', userID)
+    let docSnap = await getDoc(docRef);
+    updateDoc(docRef, {
+      level: userLevel
+    })
+    clearData()
+    getUserData(docSnap)
+    getSongs()
+    printSongs()
+  }
 }
 
 
@@ -437,6 +442,7 @@ logoutButton.addEventListener('click', () => {
   splashGreeting.innerText = "Please log in with your Hamden.org account."
   signOut(auth)
 })
+
 onAuthStateChanged(auth, async (user) => {
   // Logic for when the user logs in. If succesful and profile exists, get userLevel & song arrays 
   if (user) {
