@@ -131,11 +131,23 @@ function getUserData(docSnap) {
   handicap = docSnap.get("handicap")
 }
 
+/*
+What I want is ...
 
+Fetch the songs for the user's level. So if uLevel is 2, fetch sLevels 1 and 2.
+Check - has the uLevel 2 user submitted all the songs from Level 2?
+        If so, clear the data and re-run the fetch function at level 3 (without actually uLevel++).  
+        Then printSongs().
+        If not, just printSongs.
+        It seems like maybe the if condition from updateSongListLive() needs to be brought up to the main
+        getSongs function.
+
+*/
 
 // FETCH SONGS APPROPRIATE TO THE USER'S LEVEL
-async function getSongs() {
-  for (let i=1; i <= userLevel; i++) {
+async function getSongs(x = userLevel) {
+  console.log("getSongs says: x = ", x)
+  for (let i=1; i <= x; i++) {
     window.window['level' + i] = []
     let q = query(songsRef, where("level", "==", i), orderBy("sequence"))
     await getDocs(q)
@@ -144,15 +156,22 @@ async function getSongs() {
         window['level' + i].push({ ...doc.data(), id: doc.id })
       })
       songs.push(window['level' + i])
+      console.log("getSongs says: ", window['level' + i])
     })
   }
   updateUserLevel()
+  if (x == userLevel) {
+    updateSongListLive()
+    printSongs
+  }
+  printSongs()
 }
 
 
 
 // GENERATE THE SONG CONTENT TO THE PAGE
 function printSongs () {
+  console.log("printSongs has fired")
   levelList = document.createElement('div')
   levelList.setAttribute('id', 'level-list')
   levelUl = document.createElement('ul')
@@ -296,6 +315,8 @@ function goHome() {
   splash.style.display = "block";
   currentSongFbref = ''
   currentSongTitle = ''
+  currentSongLevel = 0
+  currentSongValue = 0
   updateButtons();
 }
 
@@ -366,17 +387,25 @@ function submitSong(e) {
       pendingSongs: pendingSongs,
       currentWeekAttempted: currentWeekAttempted
       })
+      if (currentSongLevel == userLevel) {
+        updateSongListLive()
+      }
     }
 
   } else if (!completedSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to submit " + currentSongTitle + "?")) {
+      console.log("submitSong has fired")
+      console.log("submitSong says: userID is ", userID)
       currentWeekAttempted += currentSongValue;
-      const docRef = doc(db, 'userProfiles', userID)
       pendingSongs.push(currentSongFbref)
+      const docRef = doc(db, 'userProfiles', userID)
       updateDoc(docRef, {
       pendingSongs: pendingSongs,
       currentWeekAttempted: currentWeekAttempted
       })
+      if (currentSongLevel == userLevel) {
+        updateSongListLive()
+      }
     }
   }
 }
@@ -406,18 +435,35 @@ async function updateUserLevel() {
     clearData()
     getUserData(docSnap)
     getSongs()
-    printSongs()
   }
 }
 
+async function updateSongListLive() {
+  console.log("updateSongListLive has fired")
+  let allCurrentLevelSongs = []
+  songs[userLevel-1].forEach((element) => allCurrentLevelSongs.push(element.id))
+  console.log("updateSongListLive says: allCurrentLevelSongs: ", allCurrentLevelSongs)
+  let allCurrentLevelSubmissions = completedSongs.concat(pendingSongs)
 
-// CLEAR DATA ON LOG OUT
+  let checker = (arr, target) => target.every(v => arr.includes(v));
+
+  if (checker(allCurrentLevelSubmissions, allCurrentLevelSongs)) {
+    let temp = userLevel + 1
+    const docRef = doc(db, 'userProfiles', userID)
+    let docSnap = await getDoc(docRef);
+    clearData()
+    getUserData(docSnap)
+    getSongs(temp)
+  } 
+}
+
+
+// CLEAR DATA ON LOG OUT, OR TO RESET PAGE ON LEVEL CHANGES
 function clearData() {
   backButton.classList.remove("back-button-active")
   while (navListWrapper.firstChild) {
     navListWrapper.removeChild(navListWrapper.firstChild)
   }
-  userID = ''
   pendingSongs = []
   completedSongs = []
   failedSongs = []
@@ -496,7 +542,6 @@ onAuthStateChanged(auth, async (user) => {
 
       getUserData(docSnap)
       await getSongs()
-      printSongs()
 
     }
     catch(error) {
@@ -508,5 +553,6 @@ onAuthStateChanged(auth, async (user) => {
     loginButton.style.display = 'flex'
     logoutButton.style.display = 'none'
     clearData()
+    userID = ''
   }
 });
