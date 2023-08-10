@@ -142,6 +142,7 @@ let userLevel;
 let handicap = 1
 let currentWeekAttempted;
 let currentWeekEarned;
+let currentSongAttempts;
 let songs = []
 
 function getUserData(docSnap) {
@@ -305,7 +306,7 @@ function callSongList(e) {
   }
   backButton.classList.add("back-button-active")    
 }
-function loadSong(e) {
+async function loadSong(e) {
   splash.style.display = "none";
   iframe.style.width = "100%";
   iframe.style.height = "100%";
@@ -317,7 +318,25 @@ function loadSong(e) {
   currentSongLevel = parseInt(this.dataset.level)
   currentSongSeq = parseInt(this.dataset.seq)
   currentSongValue = determineSongValue(currentSongLevel)
+  currentSongAttempts = await countCurrentSongAttempts()
+  console.log('loadSong says: currentSongAttempts = ', currentSongAttempts)
   updateButtons(); 
+}
+
+// Submissions need to be named userId + songID + attempts
+
+async function countCurrentSongAttempts(count = 0) {
+  console.log('count = ', count )
+  let subsRef = doc(db, "submissions", (`${userID + currentSongFbref}(${count + 1})`))
+  let subsSnap = await getDoc(subsRef);
+  
+  if (subsSnap.exists()) {
+    console.log('countCurrentSongAttempts says: if condition met')
+    return await countCurrentSongAttempts((count+1))
+  } else {
+    console.log('returning count: ', count)
+    return count
+  }
 }
 
 
@@ -347,8 +366,10 @@ function goHome() {
   currentSongTitle = ''
   currentSongLevel = 0
   currentSongValue = 0
+  currentSongAttempts = 0
   updateButtons();
 }
+
 
 
 
@@ -443,28 +464,9 @@ function submitSong(e) {
 }
 
 async function createSubmission() {
-  const subsRef = doc(db, "submissions", (userID+currentSongFbref))
-  let subsSnap = await getDoc(subsRef);
-  if (subsSnap.exists) {
-    await setDoc(doc(db, "submissions", userID+currentSongFbref+serverTimestamp()), {
+  await setDoc(doc(db, "submissions", userID+currentSongFbref+'('+(currentSongAttempts+1)+')'), {
       resolved: false,
-      result: 'resub',
-      timeStamp: serverTimestamp(),
-      week: currentWeek,
-      userID: userID,
-      lastName: userLastName,
-      firstName: username,
-      songfbRef: currentSongFbref,
-      songLevel: currentSongLevel,
-      songSeq: currentSongSeq,
-      songTitle: currentSongTitle,
-      pointValue: currentSongValue
-    })
-    console.log('retry submission sent successfully.')
-  } else {
-    await setDoc(doc(db, "submissions", userID+currentSongFbref), {
-      resolved: false,
-      result: 'newsub',
+      result: '',
       timeStamp: serverTimestamp(),
       week: currentWeek,
       userID: userID,
@@ -477,9 +479,11 @@ async function createSubmission() {
       pointValue: currentSongValue
     })
     console.log('submission sent successfully.')
-  }
 }
 
+async function retractSubmission() {
+  const subsRef = doc(db, "submissions", (userID+currentSongFbref))
+}
 
 // UPDATE USER'S LEVEL
 // If a user's completedSongs array includes ALL of the songs with level == the user's level
