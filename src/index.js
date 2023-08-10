@@ -107,6 +107,7 @@ failureForm.addEventListener('submit', async (e) => {
   failureForm.reset()
 
 })
+
 pendingForm.addEventListener('submit', async (e) => {
   e.preventDefault()
   const docRef = doc(db, 'userProfiles', userID)
@@ -116,6 +117,7 @@ pendingForm.addEventListener('submit', async (e) => {
   })
   pendingForm.reset()
 })
+
 completionForm.addEventListener('submit', async (e) => {
   e.preventDefault()
   const docRef = doc(db, 'userProfiles', userID)
@@ -427,6 +429,7 @@ function submitSong(e) {
       pendingSongs: pendingSongs,
       currentWeekAttempted: currentWeekAttempted
       })
+      retractSubmission()
     }
 
   } else if (failedSongs.includes(currentSongFbref)) {
@@ -478,11 +481,16 @@ async function createSubmission() {
       songTitle: currentSongTitle,
       pointValue: currentSongValue
     })
+    currentSongAttempts = await countCurrentSongAttempts()
+    console.log('createSubmission says: currentSongAttempts = ', currentSongAttempts)
     console.log('submission sent successfully.')
 }
 
 async function retractSubmission() {
-  const subsRef = doc(db, "submissions", (userID+currentSongFbref))
+  await deleteDoc(doc(db, "submissions", userID+currentSongFbref+'(' + currentSongAttempts + ')'))
+  currentSongAttempts = await countCurrentSongAttempts()
+  console.log('retractSubmission says: currentSongAttempts = ', currentSongAttempts)
+  console.log('submission deleted successfully.')
 }
 
 // UPDATE USER'S LEVEL
