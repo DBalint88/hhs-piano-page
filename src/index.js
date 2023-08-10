@@ -209,10 +209,14 @@ function printSongs () {
     let levelHeader = document.createElement("h2")
     levelHeader.textContent = 'Level ' + i
 
+    let levelValueHeader = document.createElement('h4')
+    levelValueHeader.textContent = '(' + determineSongValue(i) + ' points each)'
+
     let levelOl = document.createElement("ol")
 
     navListWrapper.appendChild(songsContainer)
     songsContainer.appendChild(levelHeader)
+    songsContainer.appendChild(levelValueHeader)
     songsContainer.appendChild(levelOl)
 
 
