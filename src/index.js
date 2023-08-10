@@ -36,6 +36,7 @@ const provider = new GoogleAuthProvider();
 
 // DEFINE COLLECTION REFERENCE
 const songsRef = collection(db, 'songs')
+const subsRef = collection(db, 'submissions')
 
 
 // * / * / * / * / Don't touch anything above this line!! / * / * / * / * //
@@ -51,7 +52,7 @@ const songsRef = collection(db, 'songs')
               I think we can define the id of the doc, so to do so dynamically and undoably just use uid+songfbref.  It will always be unique but accessible.
 
         So first chunk of this is figuring out what I need to see on my end:
-              | Timestamp | Week # | Lastname | Firstname | SongLevel | SongSequence | SongTitle |   **Radio buttons:  O - Pass  O - Fail  Submit
+              | Timestamp | Week # | Lastname | Firstname | SongLevel | SongSequence | SongTitle | PointValue |   **Radio buttons:  O - Pass  O - Fail  Submit
               
               Pass + Submit moves the song from pending array to completed array in their userProfile.  (also from failed array if applicable.)
               Fail + Submit moves the song from pending array to failed array (unless it's already IN the failed array.)
@@ -85,7 +86,12 @@ const todaysDate = new Date()
 const currentWeek = Math.ceil((todaysDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24 * 7))
 document.getElementById("weekid").innerText = currentWeek
 
-// // Temporary forms to test song completion
+
+
+// Temporary forms to test song completion
+// Temporary forms to test song completion
+// Temporary forms to test song completion
+// Temporary forms to test song completion
 
 const completionForm = document.getElementById("completion-form")
 const pendingForm = document.getElementById("pending-form")
@@ -121,10 +127,14 @@ completionForm.addEventListener('submit', async (e) => {
 })
 
 
+ 
+
+
 // FETCH USER DATA FROM SERVER -> LOCAL
 
 let username
 let userID = ''
+let userLastName = ''
 let pendingSongs = []
 let completedSongs = []
 let failedSongs = []
@@ -226,6 +236,7 @@ function printSongs () {
       song.classList.add("song-button")
       let songSrc = songs[i-1][j]
       song.setAttribute("data-level", i)
+      song.setAttribute("data-seq", (j+1))
       song.setAttribute("data-pdf", songSrc.image)
       song.setAttribute("data-video", songSrc.youtube)
       song.setAttribute("data-fbref", songSrc.id)
@@ -276,6 +287,7 @@ let currentSongFbref = ''
 let currentSongTitle = ''
 let currentSongLevel = 0
 let currentSongValue = 0
+let currentSongSeq = 0
 
 function hideSongList() {
   for (let k = 0; k < songList.length; k++) {
@@ -303,6 +315,7 @@ function loadSong(e) {
   currentSongFbref = this.dataset.fbref
   currentSongTitle = this.textContent
   currentSongLevel = parseInt(this.dataset.level)
+  currentSongSeq = parseInt(this.dataset.seq)
   currentSongValue = determineSongValue(currentSongLevel)
   updateButtons(); 
 }
@@ -404,6 +417,7 @@ function submitSong(e) {
       pendingSongs: pendingSongs,
       currentWeekAttempted: currentWeekAttempted
       })
+      createSubmission()
       if (currentSongLevel == userLevel) {
         updateSongListLive()
       }
@@ -420,13 +434,52 @@ function submitSong(e) {
       pendingSongs: pendingSongs,
       currentWeekAttempted: currentWeekAttempted
       })
+      createSubmission()
       if (currentSongLevel == userLevel) {
         updateSongListLive()
       }
     }
   }
 }
-  
+
+async function createSubmission() {
+  const subsRef = doc(db, "submissions", (userID+currentSongFbref))
+  let subsSnap = await getDoc(subsRef);
+  if (subsSnap.exists) {
+    await setDoc(doc(db, "submissions", userID+currentSongFbref+serverTimestamp()), {
+      resolved: false,
+      result: 'resub',
+      timeStamp: serverTimestamp(),
+      week: currentWeek,
+      userID: userID,
+      lastName: userLastName,
+      firstName: username,
+      songfbRef: currentSongFbref,
+      songLevel: currentSongLevel,
+      songSeq: currentSongSeq,
+      songTitle: currentSongTitle,
+      pointValue: currentSongValue
+    })
+    console.log('retry submission sent successfully.')
+  } else {
+    await setDoc(doc(db, "submissions", userID+currentSongFbref), {
+      resolved: false,
+      result: 'newsub',
+      timeStamp: serverTimestamp(),
+      week: currentWeek,
+      userID: userID,
+      lastName: userLastName,
+      firstName: username,
+      songfbRef: currentSongFbref,
+      songLevel: currentSongLevel,
+      songSeq: currentSongSeq,
+      songTitle: currentSongTitle,
+      pointValue: currentSongValue
+    })
+    console.log('submission sent successfully.')
+  }
+}
+
 
 // UPDATE USER'S LEVEL
 // If a user's completedSongs array includes ALL of the songs with level == the user's level
@@ -546,6 +599,7 @@ onAuthStateChanged(auth, async (user) => {
       if (!nick == "") {
         username = nick
       }
+      userLastName = (user.displayName).split(" ")[1]
 
         
       const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
