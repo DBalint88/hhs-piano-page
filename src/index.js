@@ -44,23 +44,7 @@ const subsRef = collection(db, 'submissions')
 
 /* TO-DO:
 
-      1. Set up back end teacher view to review submissions
-        a. This will involve downloading more information from the server, including First/Last name
-        b.  ...then uploading everything to a new Collection "submissions"
-        c. Submissions will include song title / id, first/last name, userID, and time stamp
-        d. submissions will need to be deleteable by the user.  When they submit, a doc is created.  When they unsubmit, it is deleted.  So they will need a reference variable.
-              I think we can define the id of the doc, so to do so dynamically and undoably just use uid+songfbref.  It will always be unique but accessible.
-
-        So first chunk of this is figuring out what I need to see on my end:
-              | Timestamp | Week # | Lastname | Firstname | SongLevel | SongSequence | SongTitle | PointValue |   **Radio buttons:  O - Pass  O - Fail  Submit
-              
-              Pass + Submit moves the song from pending array to completed array in their userProfile.  (also from failed array if applicable.)
-              Fail + Submit moves the song from pending array to failed array (unless it's already IN the failed array.)
-
-              In either case, points are added or deducted accordingly to/from the weeklyAttempted & weeklyEarned values in userProfile.
-
-              This MIGHT be a way of "resetting" the quota numbers.  The number might be calculated longer on the number of songs (x level) that are in the pendingSongs array, but instead query the submissions collection, which will track in which week the song was submitted.
-              
+      1. Re-factor Weekly Quota to query the submissions collection to determine it's value(s)
       2. Set auth rules, restrict domain to hamden.org
       3. Upload a lot more songs
       4. Switch from PDF to SVG
