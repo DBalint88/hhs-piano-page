@@ -101,9 +101,10 @@ nav {
   width: 100%;
   position: relative;
   overflow-x: hidden;
-  overflow-y: hidden;
-  display: grid;
-  align-items: center;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 #level-list {
@@ -119,7 +120,7 @@ nav {
   height: fit-content;
   overflow:hidden;
   position: absolute;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   left: 400px;

@@ -231,24 +231,25 @@ let currentSongSeq = 0
 function hideSongList() {
   for (let k = 0; k < songList.length; k++) {
     songList[k].classList.remove("active-song-list") 
+    songList[k].style.display = 'none'
   }
   levelList.classList.remove("inactive-level-list");
   backButton.classList.remove("back-button-active");
-  // let height = getComputedStyle(levelList).getPropertyValue("height")
-  //     console.log('height: ', height)
-  // navListWrapper.style.height = height
-  navListWrapper.style.overflow = 'hidden'
+  navListWrapper.style.height = '100%'
+  navListWrapper.style.overflowY = 'auto'
 }
 
 function callSongList(e) {
   levelList.classList.add("inactive-level-list");
   for (let j = 0; j < songList.length; j++) {
     if (songList[j].id == ("level-" + (this.id))) {
+      songList[j].style.display = 'flex'
       songList[j].classList.add("active-song-list");
     }
   }
   backButton.classList.add("back-button-active")  
-  navListWrapper.style.overflowY = 'auto'  
+  navListWrapper.style.height = '100%'
+  navListWrapper.style.overflowY = 'auto' 
 }
 
 
