@@ -238,7 +238,12 @@ function hideSongList() {
   }
   levelList.classList.remove("inactive-level-list");
   backButton.classList.remove("back-button-active");
+  // let height = getComputedStyle(levelList).getPropertyValue("height")
+  //     console.log('height: ', height)
+  // navListWrapper.style.height = height
+  navListWrapper.style.overflow = 'hidden'
 }
+
 function callSongList(e) {
   levelList.classList.add("inactive-level-list");
   for (let j = 0; j < songList.length; j++) {
@@ -246,8 +251,11 @@ function callSongList(e) {
       songList[j].classList.add("active-song-list");
     }
   }
-  backButton.classList.add("back-button-active")    
+  backButton.classList.add("back-button-active")  
+  navListWrapper.style.overflowY = 'auto'  
 }
+
+
 async function loadSong(e) {
   splash.style.display = "none";
   iframe.style.width = "100%";
@@ -351,7 +359,8 @@ function updateButtons() {
 
 
 // UPDATE THE QUOTA DISPLAY
-function updateQuotaDisplay() {
+async function updateQuotaDisplay() {
+
   document.getElementById("points-attempted").innerText = currentWeekAttempted;
   document.getElementById("points-earned").innerText = currentWeekEarned;
 }
