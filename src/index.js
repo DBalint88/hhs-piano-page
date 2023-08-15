@@ -82,8 +82,6 @@ let completedSongs = []
 let failedSongs = []
 let userLevel;
 let handicap = 1
-let currentWeekAttempted;
-let currentWeekEarned;
 let currentSongAttempts;
 let songs = []
 
@@ -92,8 +90,6 @@ function getUserData(docSnap) {
   pendingSongs = docSnap.get("pendingSongs")
   completedSongs = docSnap.get("completedSongs")
   failedSongs = docSnap.get("failedSongs")
-  currentWeekAttempted = docSnap.get("currentWeekAttempted")
-  currentWeekEarned = docSnap.get("currentWeekEarned")
   handicap = docSnap.get("handicap")
 }
 
@@ -361,6 +357,29 @@ function updateButtons() {
 // UPDATE THE QUOTA DISPLAY
 async function updateQuotaDisplay() {
 
+  let currentWeekAttempted = 0
+  let currentWeekEarned = 0
+  let userCurrentWeekSubs = []
+  const quotaQuery = query(subsRef, where("userID", "==", userID), where("week", "==", currentWeek))
+  await getDocs(quotaQuery)
+    .then((snapshot) => {
+      snapshot.docs.forEach((sub) => {
+        userCurrentWeekSubs.push({ ...sub.data(), id: sub.id })
+      })
+      
+    })
+  for (let i = 0; i < userCurrentWeekSubs.length; i++) {
+    const sub = userCurrentWeekSubs[i];
+    console.log('sub.resolved: ', sub.resolved)
+    console.log('sub.pointValue: ', sub.pointValue)
+    if (sub.resolved == false) {
+      currentWeekAttempted += sub.pointValue
+    } else if (sub.result == "pass") {
+      currentWeekEarned += sub.pointValue
+    }
+  }
+  
+  
   document.getElementById("points-attempted").innerText = currentWeekAttempted;
   document.getElementById("points-earned").innerText = currentWeekEarned;
 }
@@ -371,24 +390,20 @@ async function updateQuotaDisplay() {
 function submitSong(e) {
   if (pendingSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to unsubmit " + currentSongTitle + "?")) {
-      currentWeekAttempted -= currentSongValue;
       const docRef = doc(db, 'userProfiles', userID)
       pendingSongs.splice(pendingSongs.indexOf(currentSongFbref), 1)
       updateDoc(docRef, {
       pendingSongs: pendingSongs,
-      currentWeekAttempted: currentWeekAttempted
       })
       retractSubmission()
     }
 
   } else if (failedSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to resubmit " + currentSongTitle + "?")) {
-      currentWeekAttempted += currentSongValue;
       const docRef = doc(db, 'userProfiles', userID)
       pendingSongs.push(currentSongFbref)
       updateDoc(docRef, {
       pendingSongs: pendingSongs,
-      currentWeekAttempted: currentWeekAttempted
       })
       createSubmission()
       if (currentSongLevel == userLevel) {
@@ -400,12 +415,10 @@ function submitSong(e) {
     if (confirm("Are you sure you want to submit " + currentSongTitle + "?")) {
       console.log("submitSong has fired")
       console.log("submitSong says: userID is ", userID)
-      currentWeekAttempted += currentSongValue;
       pendingSongs.push(currentSongFbref)
       const docRef = doc(db, 'userProfiles', userID)
       updateDoc(docRef, {
       pendingSongs: pendingSongs,
-      currentWeekAttempted: currentWeekAttempted
       })
       createSubmission()
       if (currentSongLevel == userLevel) {
@@ -542,8 +555,6 @@ onAuthStateChanged(auth, async (user) => {
           pendingSongs: [],
           failedSongs: [],
           handicap: 1,
-          currentWeekAttempted: 0,
-          currentWeekEarned: 0
         })
         docSnap = await getDoc(docRef);
       }
