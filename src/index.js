@@ -72,50 +72,6 @@ document.getElementById("weekid").innerText = currentWeek
 
 
 
-// Temporary forms to test song completion
-// Temporary forms to test song completion
-// Temporary forms to test song completion
-// Temporary forms to test song completion
-
-const completionForm = document.getElementById("completion-form")
-const pendingForm = document.getElementById("pending-form")
-const failureForm = document.getElementById("failure-form")
-
-failureForm.addEventListener('submit', async (e) => {
-  e.preventDefault()
-  const docRef = doc(db, 'userProfiles', userID)
-  failedSongs.push(failureForm.failed.value)
-  await updateDoc(docRef, {
-    failedSongs: failedSongs
-  })
-  failureForm.reset()
-
-})
-
-pendingForm.addEventListener('submit', async (e) => {
-  e.preventDefault()
-  const docRef = doc(db, 'userProfiles', userID)
-  pendingSongs.push(pendingForm.pending.value)
-  await updateDoc(docRef, {
-    pendingSongs: pendingSongs
-  })
-  pendingForm.reset()
-})
-
-completionForm.addEventListener('submit', async (e) => {
-  e.preventDefault()
-  const docRef = doc(db, 'userProfiles', userID)
-  completedSongs.push(completionForm.completed.value)
-  await updateDoc(docRef, {
-    completedSongs: completedSongs
-  })
-  completionForm.reset()
-})
-
-
- 
-
-
 // FETCH USER DATA FROM SERVER -> LOCAL
 
 let username
