@@ -44,10 +44,9 @@ const subsRef = collection(db, 'submissions')
 
 /* TO-DO:
 
-      1. Re-factor Weekly Quota to query the submissions collection to determine it's value(s)
-      2. Set auth rules, restrict domain to hamden.org
-      3. Upload a lot more songs
-      4. Switch from PDF to SVG
+      1. Set auth rules, restrict domain to hamden.org
+      2. Upload a lot more songs
+      3. Switch from PDF to SVG
 */
 
 // NAV ELEMENT ANCHORS
@@ -291,9 +290,10 @@ async function loadSong(e) {
 
 function adjustListPosition() {
   let wrapperHeight = navListWrapper.clientHeight;
-  try {
-    setTimeout(function(){
-      let songList = document.getElementsByClassName('active-song-list')[0]
+  
+  setTimeout(function(){
+    try {
+    let songList = document.getElementsByClassName('active-song-list')[0]
     if (typeof songList == "undefined") {
       songList = document.getElementsByClassName('active-song-list-short-screen')[0]
     }
@@ -309,13 +309,12 @@ function adjustListPosition() {
       songList.classList.remove('active-song-list')
       songList.classList.add('active-song-list-short-screen')
     }
-    }, 1)
-    
-  }
-  catch {
+    } catch {
     console.log("can't get the height of a div that don't exist.")
-    return;
-  }
+    }
+  }, 1)
+    
+  
 
   
 }
