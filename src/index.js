@@ -227,29 +227,48 @@ let currentSongTitle = ''
 let currentSongLevel = 0
 let currentSongValue = 0
 let currentSongSeq = 0
+let currentActiveLevel = ""
+
+
+
 
 function hideSongList() {
-  for (let k = 0; k < songList.length; k++) {
-    songList[k].classList.remove("active-song-list") 
-    songList[k].style.display = 'none'
-  }
+  let currentActiveSongList = songList[currentActiveLevel-1]
+  // song-list-loading needs to be added FIRST THING.  That allows the list to display.
+  // Immediately, active-song-list must be removed.  That creates the transition.
+  // 250ms later, song-list-loading needs to be removed to reduce the navlistwrapper size.
+  currentActiveSongList.classList.add('song-list-loading')
+  currentActiveSongList.classList.remove("active-song-list")
+  currentActiveSongList.classList.remove("active-song-list-short-screen")
   levelList.classList.remove("inactive-level-list");
-  backButton.classList.remove("back-button-active");
-  navListWrapper.style.height = '100%'
-  navListWrapper.style.overflowY = 'auto'
+  backButton.classList.remove("back-button-active") 
+  setTimeout(function(){
+    currentActiveSongList.classList.remove('song-list-loading')
+    
+  }, 250) 
+
+
+
+  currentActiveLevel = ""
+  
 }
 
 function callSongList(e) {
+  currentActiveLevel = this.id
+  let currentActiveSongList = songList[currentActiveLevel-1]
   levelList.classList.add("inactive-level-list");
-  for (let j = 0; j < songList.length; j++) {
-    if (songList[j].id == ("level-" + (this.id))) {
-      songList[j].style.display = 'flex'
-      songList[j].classList.add("active-song-list");
-    }
-  }
-  backButton.classList.add("back-button-active")  
-  navListWrapper.style.height = '100%'
-  navListWrapper.style.overflowY = 'auto' 
+  currentActiveSongList.classList.add('song-list-loading')
+  setTimeout(function(){
+    currentActiveSongList.classList.add("active-song-list")
+    currentActiveSongList.classList.remove('song-list-loading')
+    backButton.classList.add("back-button-active") 
+    adjustListPosition()
+  }, 1) 
+  
+
+   
+  
+  
 }
 
 
@@ -269,6 +288,39 @@ async function loadSong(e) {
   console.log('loadSong says: currentSongAttempts = ', currentSongAttempts)
   updateButtons(); 
 }
+
+function adjustListPosition() {
+  let wrapperHeight = navListWrapper.clientHeight;
+  try {
+    setTimeout(function(){
+      let songList = document.getElementsByClassName('active-song-list')[0]
+    if (typeof songList == "undefined") {
+      songList = document.getElementsByClassName('active-song-list-short-screen')[0]
+    }
+    console.log(songList)
+    let songListHeight = songList.clientHeight;
+
+    if (wrapperHeight >= songListHeight) {
+      console.log('wrapperHeight (' + wrapperHeight + ') >= songListHeight (' + songListHeight + ')')
+      songList.classList.remove('active-song-list-short-screen')
+      songList.classList.add('active-song-list')
+    } else {
+      console.log('wrapperHeight (' + wrapperHeight + ') !>= songListHeight (' + songListHeight + ')')
+      songList.classList.remove('active-song-list')
+      songList.classList.add('active-song-list-short-screen')
+    }
+    }, 1)
+    
+  }
+  catch {
+    console.log("can't get the height of a div that don't exist.")
+    return;
+  }
+
+  
+}
+
+window.addEventListener('resize', adjustListPosition)
 
 // Submissions need to be named userId + songID + attempts
 

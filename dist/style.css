@@ -105,6 +105,7 @@ nav {
   display: flex;
   flex-direction: column;
   justify-content: center;
+
 }
 
 #level-list {
@@ -116,21 +117,35 @@ nav {
 
 .song-list {
   width: 100%;
-  top: 0;
   height: fit-content;
-  overflow:hidden;
   position: absolute;
+  left: 400px;
+  top: 50%;
+  transform: translateY(-50%);
   display: none;
   flex-direction: column;
   justify-content: center;
-  left: 400px;
   transition: .25s linear;
 }
 
+.song-list-loading {
+  display: flex;
+  
+}
+
 .active-song-list {
+  display: flex;
+  transform: translateY(-50%) translate(-400px);
+}
+
+.active-song-list-short-screen {
+  display: flex;
+  top: 0;
   transform: translate(-400px);
 }
 
+
+/* This has nothing to do with song lists */
 .inactive-level-list {
   transform: translate(-400px);
 }
