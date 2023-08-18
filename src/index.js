@@ -323,8 +323,7 @@ window.addEventListener('resize', adjustListPosition)
 
 // Submissions need to be named userId + songID + attempts
 
-async function countCurrentSongAttempts(count = 0) {
-  console.log('count = ', count )
+async function countCurrentSongAttempts() {
   // Query the database for all user Submissions
   let userSubmissions = []
   console.log('line 330')
@@ -337,12 +336,14 @@ async function countCurrentSongAttempts(count = 0) {
       })
     })
   console.log('line 339')
-  if (userSubmissions.includes(`${userID + currentSongFbref}(${count + 1})`)) {
-    console.log('countCurrentSongAttempts says: the If condition met')
-    return await countCurrentSongAttempts((count+1))
-  } else {
-    console.log('returning count: ', count)
-    return count
+  console.log(userSubmissions)
+  let i = 1
+  while (true) {
+    if (!userSubmissions.includes(`${userID + currentSongFbref}(${i})`)) {
+      console.log('countCurrentSongAttempts returns: ', i)
+      return i;
+    }
+    i++
   }
 }
 
@@ -512,7 +513,10 @@ async function createSubmission() {
 }
 
 async function retractSubmission() {
+  console.log('line 515')
+  console.log('just checking update')
   await deleteDoc(doc(db, "submissions", userID+currentSongFbref+'(' + currentSongAttempts + ')'))
+  console.log('line 517')
   currentSongAttempts = await countCurrentSongAttempts()
   console.log('retractSubmission says: currentSongAttempts = ', currentSongAttempts)
   console.log('submission deleted successfully.')
