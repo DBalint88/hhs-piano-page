@@ -275,7 +275,7 @@ async function loadSong(e) {
   splash.style.display = "none";
   iframe.style.width = "100%";
   iframe.style.height = "100%";
-  iframe.src = this.dataset.pdf + "#zoom=118";
+  iframe.src = this.dataset.pdf + "#zoom=118&navpanes=0&pagemode=none";
   videoLink.href = this.dataset.video;
   pdfLink.href = this.dataset.pdf +"#zoom=83";
   currentSongFbref = this.dataset.fbref
@@ -293,24 +293,24 @@ function adjustListPosition() {
   
   setTimeout(function(){
     try {
-    let songList = document.getElementsByClassName('active-song-list')[0]
-    if (typeof songList == "undefined") {
-      songList = document.getElementsByClassName('active-song-list-short-screen')[0]
-    }
-    console.log(songList)
-    let songListHeight = songList.clientHeight;
+      let songList = document.getElementsByClassName('active-song-list')[0]
+      if (typeof songList == "undefined") {
+        songList = document.getElementsByClassName('active-song-list-short-screen')[0]
+      }
+      console.log(songList)
+      let songListHeight = songList.clientHeight;
 
-    if (wrapperHeight >= songListHeight) {
-      console.log('wrapperHeight (' + wrapperHeight + ') >= songListHeight (' + songListHeight + ')')
-      songList.classList.remove('active-song-list-short-screen')
-      songList.classList.add('active-song-list')
-    } else {
-      console.log('wrapperHeight (' + wrapperHeight + ') !>= songListHeight (' + songListHeight + ')')
-      songList.classList.remove('active-song-list')
-      songList.classList.add('active-song-list-short-screen')
-    }
+      if (wrapperHeight >= songListHeight) {
+        console.log('wrapperHeight (' + wrapperHeight + ') >= songListHeight (' + songListHeight + ')')
+        songList.classList.remove('active-song-list-short-screen')
+        songList.classList.add('active-song-list')
+      } else {
+        console.log('wrapperHeight (' + wrapperHeight + ') !>= songListHeight (' + songListHeight + ')')
+        songList.classList.remove('active-song-list')
+        songList.classList.add('active-song-list-short-screen')
+      }
     } catch {
-    console.log("can't get the height of a div that don't exist.")
+      console.log("can't get the height of a div that don't exist.")
     }
   }, 1)
     
@@ -325,11 +325,20 @@ window.addEventListener('resize', adjustListPosition)
 
 async function countCurrentSongAttempts(count = 0) {
   console.log('count = ', count )
-  let subsRef = doc(db, "submissions", (`${userID + currentSongFbref}(${count + 1})`))
-  let subsSnap = await getDoc(subsRef);
-  
-  if (subsSnap.exists()) {
-    console.log('countCurrentSongAttempts says: if condition met')
+  // Query the database for all user Submissions
+  let userSubmissions = []
+  console.log('line 330')
+  const countQuery = query(subsRef, where("userID", "==", userID))
+  console.log('line 332')
+  await getDocs(countQuery)
+    .then((snapshot) => {
+      snapshot.docs.forEach((sub) => {
+        userSubmissions.push({ id: sub.id })
+      })
+    })
+  console.log('line 339')
+  if (userSubmissions.includes(`${userID + currentSongFbref}(${count + 1})`)) {
+    console.log('countCurrentSongAttempts says: the If condition met')
     return await countCurrentSongAttempts((count+1))
   } else {
     console.log('returning count: ', count)
@@ -408,11 +417,12 @@ function updateButtons() {
 
 // UPDATE THE QUOTA DISPLAY
 async function updateQuotaDisplay() {
-
+  console.log('line 417')
   let currentWeekAttempted = 0
   let currentWeekEarned = 0
   let userCurrentWeekSubs = []
   const quotaQuery = query(subsRef, where("userID", "==", userID), where("week", "==", currentWeek))
+  console.log('line 422')
   await getDocs(quotaQuery)
     .then((snapshot) => {
       snapshot.docs.forEach((sub) => {
@@ -420,6 +430,7 @@ async function updateQuotaDisplay() {
       })
       
     })
+    console.log('line 430')
   for (let i = 0; i < userCurrentWeekSubs.length; i++) {
     const sub = userCurrentWeekSubs[i];
     console.log('sub.resolved: ', sub.resolved)
