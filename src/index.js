@@ -326,24 +326,23 @@ window.addEventListener('resize', adjustListPosition)
 async function countCurrentSongAttempts() {
   // Query the database for all user Submissions
   let userSubmissions = []
-  console.log('line 330')
   const countQuery = query(subsRef, where("userID", "==", userID))
-  console.log('line 332')
   await getDocs(countQuery)
     .then((snapshot) => {
       snapshot.docs.forEach((sub) => {
-        userSubmissions.push({ id: sub.id })
+        userSubmissions.push(sub.id)
       })
     })
-  console.log('line 339')
-  console.log(userSubmissions)
+  console.log('countCurrentSongAttempts 336 userSubmissions: ', userSubmissions)
   let i = 1
   while (true) {
-    if (!userSubmissions.includes(`${userID + currentSongFbref}(${i})`)) {
-      console.log('countCurrentSongAttempts returns: ', i)
-      return i;
+    console.log('countCurrentSongAttempts while loop.  Eval: ' + userID + currentSongFbref + '(' + i + ')')
+    if (userSubmissions.includes(userID + currentSongFbref + '(' + i + ')')) {
+      i++
+    } else {
+      console.log('countCurrentSongAttempts line343 returns: ', (i-1))
+      return (i-1);
     }
-    i++
   }
 }
 
@@ -364,7 +363,6 @@ function determineSongValue(x) {
 }
 
 function goHome() {
-  console.log('homebutton')
   iframe.style.width = '0';
   iframe.style.height = '0';
   videoLink.href = ''
@@ -418,24 +416,18 @@ function updateButtons() {
 
 // UPDATE THE QUOTA DISPLAY
 async function updateQuotaDisplay() {
-  console.log('line 417')
   let currentWeekAttempted = 0
   let currentWeekEarned = 0
   let userCurrentWeekSubs = []
   const quotaQuery = query(subsRef, where("userID", "==", userID), where("week", "==", currentWeek))
-  console.log('line 422')
   await getDocs(quotaQuery)
     .then((snapshot) => {
       snapshot.docs.forEach((sub) => {
         userCurrentWeekSubs.push({ ...sub.data(), id: sub.id })
       })
-      
     })
-    console.log('line 430')
   for (let i = 0; i < userCurrentWeekSubs.length; i++) {
     const sub = userCurrentWeekSubs[i];
-    console.log('sub.resolved: ', sub.resolved)
-    console.log('sub.pointValue: ', sub.pointValue)
     if (sub.resolved == false) {
       currentWeekAttempted += sub.pointValue
     } else if (sub.result == "pass") {
@@ -477,8 +469,6 @@ function submitSong(e) {
 
   } else if (!completedSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to submit " + currentSongTitle + "?")) {
-      console.log("submitSong has fired")
-      console.log("submitSong says: userID is ", userID)
       pendingSongs.push(currentSongFbref)
       const docRef = doc(db, 'userProfiles', userID)
       updateDoc(docRef, {
@@ -493,6 +483,7 @@ function submitSong(e) {
 }
 
 async function createSubmission() {
+  console.log('createSubmission 484: Trying to create sub doc: ', userID+currentSongFbref+'('+(currentSongAttempts+1)+')')
   await setDoc(doc(db, "submissions", userID+currentSongFbref+'('+(currentSongAttempts+1)+')'), {
       resolved: false,
       result: '',
@@ -509,14 +500,12 @@ async function createSubmission() {
     })
     currentSongAttempts = await countCurrentSongAttempts()
     console.log('createSubmission says: currentSongAttempts = ', currentSongAttempts)
-    console.log('submission sent successfully.')
+    console.log('submission sent successfully: ', userID+currentSongFbref+'('+(currentSongAttempts)+')')
 }
 
 async function retractSubmission() {
-  console.log('line 515')
-  console.log('just checking update')
+  console.log('trying to delete: ', userID+currentSongFbref+'(' + currentSongAttempts + ')')
   await deleteDoc(doc(db, "submissions", userID+currentSongFbref+'(' + currentSongAttempts + ')'))
-  console.log('line 517')
   currentSongAttempts = await countCurrentSongAttempts()
   console.log('retractSubmission says: currentSongAttempts = ', currentSongAttempts)
   console.log('submission deleted successfully.')
@@ -550,10 +539,8 @@ async function updateUserLevel() {
 }
 
 async function updateSongListLive() {
-  console.log("updateSongListLive has fired")
   let allCurrentLevelSongs = []
   songs[userLevel-1].forEach((element) => allCurrentLevelSongs.push(element.id))
-  console.log("updateSongListLive says: allCurrentLevelSongs: ", allCurrentLevelSongs)
   let allCurrentLevelSubmissions = completedSongs.concat(pendingSongs)
 
   let checker = (arr, target) => target.every(v => arr.includes(v));
