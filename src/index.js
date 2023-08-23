@@ -44,9 +44,12 @@ const subsRef = collection(db, 'submissions')
 
 /* TO-DO:
 
-      1. Set auth rules, restrict domain to hamden.org
+      1. Add login function for Songbuilder & Grader App.  Deploy those.
       2. Upload a lot more songs
-      3. Switch from PDF to SVG
+      3. Add new songs so each Level goes to 12.  Ditch Frere Jacques.
+      4. Optimize code to reduce server calls
+      5. Switch from PDF to SVG
+      6. Mobile friendly
 */
 
 // NAV ELEMENT ANCHORS
