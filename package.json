@@ -24,6 +24,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "firebase": "^10.2.0"
+    "firebase": "^10.2.0",
+    "firebase-tools": "^12.5.4"
   }
 }

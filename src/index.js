@@ -86,6 +86,7 @@ let userLevel;
 let handicap = 1
 let currentSongAttempts;
 let songs = []
+let userLvl9
 
 function getUserData(docSnap) {
   userLevel = docSnap.get("level")
@@ -93,6 +94,7 @@ function getUserData(docSnap) {
   completedSongs = docSnap.get("completedSongs")
   failedSongs = docSnap.get("failedSongs")
   handicap = docSnap.get("handicap")
+  userLvl9 = docSnap.get("userLvl9")
 }
 
 /*
@@ -605,6 +607,8 @@ onAuthStateChanged(auth, async (user) => {
       let docSnap = await getDoc(docRef);
       if(!docSnap.exists()) {
         await setDoc(doc(db, "userProfiles", userID), {
+          firstName: (user.displayName).split(" ")[0],
+          lastName: (user.displayName).split(" ")[1],
           level: 1,
           role: "student",
           nick: "",
@@ -612,9 +616,15 @@ onAuthStateChanged(auth, async (user) => {
           pendingSongs: [],
           failedSongs: [],
           handicap: 1,
+          userLvl9: "false"
         })
         docSnap = await getDoc(docRef);
       }
+      await updateDoc(docRef, {
+        firstName: (user.displayName).split(" ")[0],
+        lastName: (user.displayName).split(" ")[1]
+      })
+      
 
       onSnapshot(docRef, (doc) => {
         getUserData(doc)
@@ -630,6 +640,8 @@ onAuthStateChanged(auth, async (user) => {
       }
       userLastName = (user.displayName).split(" ")[1]
 
+      
+
         
       const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
       const d = new Date();
@@ -641,6 +653,12 @@ onAuthStateChanged(auth, async (user) => {
       logoutButton.style.display = 'block'
 
       getUserData(docSnap)
+      const quotaMax = document.getElementsByClassName("quota-max");
+      if (userLvl9 == true) {
+        for (let i = 0; i < quotaMax.length; i++) {
+          quotaMax[i].innerText = "90"
+        }
+      }
       await getSongs()
 
     }
