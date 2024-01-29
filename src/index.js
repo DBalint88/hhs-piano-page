@@ -67,7 +67,7 @@ let submitButton = document.getElementById("submit-button")
 const navListWrapper = document.getElementById("nav-list-wrapper")
 let levelList
 let levelUl
-const startDate = new Date('August 27, 2023')
+const startDate = new Date('January 28, 2024')
 const todaysDate = new Date()
 const currentWeek = Math.ceil((todaysDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24 * 7))
 document.getElementById("weekid").innerText = currentWeek
