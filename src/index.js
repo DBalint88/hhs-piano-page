@@ -453,17 +453,18 @@ const rossButton = document.getElementById("ross-button")
 
 function confirmInstructor() {
   instructorModal.style.display = "block";
-  while ((instructor != "balint") && (instructor != "rossomando")) {
-    setTimeout(function(){
-      console.log("continuing...")
-  }, 1000);
-  }
-  return
+  // while ((instructor != "balint") && (instructor != "rossomando")) {
+  //   setTimeout(function(){
+  //     console.log("continuing...")
+  // }, 1000);
+  // }
+  // return
   
 }
 
 balintButton.addEventListener("click", () => {
   instructor = "balint"
+  instructorModal.style.display = "none";
   const docRef = doc(db, 'userProfiles', userID)
       updateDoc(docRef, {
       instructor: instructor,
@@ -472,6 +473,7 @@ balintButton.addEventListener("click", () => {
 
 rossButton.addEventListener("click", () => {
   instructor = "rossomando"
+  instructorModal.style.display = "none";
   const docRef = doc(db, 'userProfiles', userID)
   updateDoc(docRef, {
   instructor: instructor,
