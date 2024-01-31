@@ -97,6 +97,12 @@ function getUserData(docSnap) {
   handicap = docSnap.get("handicap")
   userLvl9 = docSnap.get("userLvl9")
   instructor = docSnap.get("instructor")
+  console.log("instructor: " + instructor)
+  if (instructor != "balint" && instructor != "rossomando") {
+    console.log("ah jeez idk who the instructor is.")
+    confirmInstructor()
+  }
+  
 }
 
 /*
@@ -453,14 +459,8 @@ const rossButton = document.getElementById("ross-button")
 
 function confirmInstructor() {
   instructorModal.style.display = "block";
-  // while ((instructor != "balint") && (instructor != "rossomando")) {
-  //   setTimeout(function(){
-  //     console.log("continuing...")
-  // }, 1000);
-  // }
-  // return
-  
 }
+
 
 balintButton.addEventListener("click", () => {
   instructor = "balint"
@@ -655,10 +655,12 @@ onAuthStateChanged(auth, async (user) => {
           pendingSongs: [],
           failedSongs: [],
           handicap: 1,
-          userLvl9: "false"
+          userLvl9: "false",
+          instructor: ""
         })
         docSnap = await getDoc(docRef);
       }
+      
       await updateDoc(docRef, {
         firstName: (user.displayName).split(" ")[0],
         lastName: (user.displayName).split(" ")[1]
