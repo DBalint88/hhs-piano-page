@@ -540,7 +540,8 @@ async function createSubmission() {
       songLevel: currentSongLevel,
       songSeq: currentSongSeq,
       songTitle: currentSongTitle,
-      pointValue: currentSongValue
+      pointValue: currentSongValue,
+      instructor: instructor
     })
     currentSongAttempts = await countCurrentSongAttempts()
     console.log('createSubmission says: currentSongAttempts = ', currentSongAttempts)
