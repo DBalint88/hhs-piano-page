@@ -453,7 +453,6 @@ const rossButton = document.getElementById("ross-button")
 
 function confirmInstructor() {
   instructorModal.style.display = "block";
-  modal = true;
   while ((instructor != "balint") && (instructor != "rossomando")) {
     setTimeout(function(){
   }, 1000);
