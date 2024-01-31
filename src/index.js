@@ -455,9 +455,8 @@ function confirmInstructor() {
   instructorModal.style.display = "block";
   while ((instructor != "balint") && (instructor != "rossomando")) {
     setTimeout(function(){
+      console.log("continuing...")
   }, 1000);
-    console.log("continuing...")
-    continue
   }
   return
   

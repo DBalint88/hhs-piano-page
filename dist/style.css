@@ -313,23 +313,4 @@ iframe {
   width: 80%; /* Could be more or less, depending on screen size */
 }
 
-/* The Close Button */
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
 
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* Remember to delete these, they are just temporary for testing back-end. */
-.tempform {
-  background-color: black;
-
-}
