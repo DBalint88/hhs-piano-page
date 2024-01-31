@@ -87,6 +87,7 @@ let handicap = 1
 let currentSongAttempts;
 let songs = []
 let userLvl9
+let instructor = ""
 
 function getUserData(docSnap) {
   userLevel = docSnap.get("level")
@@ -95,6 +96,7 @@ function getUserData(docSnap) {
   failedSongs = docSnap.get("failedSongs")
   handicap = docSnap.get("handicap")
   userLvl9 = docSnap.get("userLvl9")
+  instructor = docSnap.get("instructor")
 }
 
 /*
@@ -445,10 +447,47 @@ async function updateQuotaDisplay() {
   document.getElementById("points-earned").innerText = currentWeekEarned;
 }
 
+const instructorModal = document.getElementById("instructor-modal")
+const balintButton = document.getElementById("balint-button")
+const rossButton = document.getElementById("ross-button")
+
+function confirmInstructor() {
+  instructorModal.style.display = "block";
+  modal = true;
+  while ((instructor != "balint") && (instructor != "rossomando")) {
+    setTimeout(function(){
+  }, 1000);
+    console.log("continuing...")
+    continue
+  }
+  return
+  
+}
+
+balintButton.addEventListener("click", () => {
+  instructor = "balint"
+  const docRef = doc(db, 'userProfiles', userID)
+      updateDoc(docRef, {
+      instructor: instructor,
+      })
+})
+
+rossButton.addEventListener("click", () => {
+  instructor = "rossomando"
+  const docRef = doc(db, 'userProfiles', userID)
+  updateDoc(docRef, {
+  instructor: instructor,
+  })
+})
+
+
 
 
 // HANDLE SONG SUBMISSION
-function submitSong(e) {
+async function submitSong(e) {
+  if ((instructor != "balint") && (instructor != "rossomando")) {
+    await confirmInstructor()
+  }
   if (pendingSongs.includes(currentSongFbref)) {
     if (confirm("Are you sure you want to unsubmit " + currentSongTitle + "?")) {
       const docRef = doc(db, 'userProfiles', userID)
