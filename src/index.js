@@ -466,9 +466,9 @@ balintButton.addEventListener("click", () => {
   instructor = "balint"
   instructorModal.style.display = "none";
   const docRef = doc(db, 'userProfiles', userID)
-      updateDoc(docRef, {
-      instructor: instructor,
-      })
+  updateDoc(docRef, {
+    instructor: instructor,
+  })
 })
 
 rossButton.addEventListener("click", () => {
@@ -476,7 +476,7 @@ rossButton.addEventListener("click", () => {
   instructorModal.style.display = "none";
   const docRef = doc(db, 'userProfiles', userID)
   updateDoc(docRef, {
-  instructor: instructor,
+    instructor: instructor,
   })
 })
 
