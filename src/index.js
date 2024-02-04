@@ -466,8 +466,8 @@ function confirmInstructor() {
 
   modalParagraph.textContent = "One-time check: Who is your instructor for this class?"
 
-  instructorModal.classList.append("modal")
-  modalContent.classList.append("modal-content")
+  instructorModal.classList.add("modal")
+  modalContent.classList.add("modal-content")
 
   balintButton.textContent = "Mr. Balint"
   rossButton.textContent = "Ms. Rossomando-Heise"
