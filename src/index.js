@@ -364,6 +364,7 @@ async function countCurrentSongAttempts() {
 //  DETERMINE POINT VALUE OF CURRENT SONG TOWARDS WEEKLY QUOTA
 function determineSongValue(x) {
   if (userLvl9 == 'true') {
+    console.log("userLvl9 definitel equals 'true'.")
     switch (x) {
       case 1:
         return 10;
@@ -381,6 +382,8 @@ function determineSongValue(x) {
         return 60;
     }
   }
+
+  console.log("uhhh, somehow userLvl9 does not equal true.")
 
   if (handicap == 2) {
     switch (x) {
