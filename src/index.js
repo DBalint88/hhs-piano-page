@@ -86,7 +86,7 @@ let userLevel;
 let handicap = 1
 let currentSongAttempts;
 let songs = []
-let userLvl9
+let userLvl9 // Beware! This ends up entered as a STRING!  NOT a Boolean.
 let instructor = ""
 
 function getUserData(docSnap) {
@@ -363,17 +363,46 @@ async function countCurrentSongAttempts() {
 
 //  DETERMINE POINT VALUE OF CURRENT SONG TOWARDS WEEKLY QUOTA
 function determineSongValue(x) {
+  if (userLvl9 == 'true') {
+    switch (x) {
+      case 1:
+        return 10;
+      case 2:
+        return 12;
+      case 3:
+        return 15;
+      case 4:
+        return 20;
+      case 5: 
+        return 30;
+      case 6:
+        return 30;
+      default:
+        return 60;
+    }
+  }
+
+  if (handicap == 2) {
+    switch (x) {
+      case 1:
+        return 30
+      default:
+        return 60
+    }
+  }
+
   switch (x) {
     case 1:
-      return 15 * handicap
+      return 15
     case 2:
-      return 20 * handicap
+      return 20
     case 3:
-      return 30 * handicap
+      return 30
     default:
       return 60
   }
 }
+  
 
 function goHome() {
   iframe.style.width = '0';
@@ -714,11 +743,6 @@ onAuthStateChanged(auth, async (user) => {
 
       getUserData(docSnap)
       const quotaMax = document.getElementsByClassName("quota-max");
-      if (userLvl9 == true) {
-        for (let i = 0; i < quotaMax.length; i++) {
-          quotaMax[i].innerText = "90"
-        }
-      }
       await getSongs()
 
     }
