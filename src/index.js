@@ -374,7 +374,7 @@ function determineSongValue(x) {
     console.log("userLvl9 definitely equals 'true'.")
     switch (x) {
       case 1:
-        return 10;
+        return 12;
       case 2:
         return 15;
       case 3:
