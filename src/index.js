@@ -70,7 +70,7 @@ let levelUl
 const startDate = new Date('August 27, 2023')
 const todaysDate = new Date()
 const currentWeek = Math.ceil((todaysDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24 * 7))
-document.getElementById("weekid").innerText = currentWeek - 73
+document.getElementById("weekid").innerText = currentWeek - 74
 
 
 
