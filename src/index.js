@@ -70,7 +70,7 @@ let levelUl
 const startDate = new Date('August 27, 2023')
 const todaysDate = new Date()
 const currentWeek = Math.ceil((todaysDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24 * 7))
-document.getElementById("weekid").innerText = currentWeek - 52
+document.getElementById("weekid").innerText = currentWeek - 73
 
 
 
@@ -374,8 +374,18 @@ function determineSongValue(x) {
         return 20;
       case 4:
         return 30;
-      default:
+      case 5:
         return 60;
+      case 6:
+        return 60;
+      case 7:
+        return 60;
+      case 8:
+        return 60;
+      case 9:
+        return 120;
+      default:
+        return 180;
     }
   }
 
@@ -395,8 +405,20 @@ function determineSongValue(x) {
       return 20
     case 3:
       return 30
+    case 4:
+      return 60;
+    case 5:
+      return 60;
+    case 6:
+      return 60;
+    case 7:
+      return 60;
+    case 8:
+      return 120;
+    case 9:
+      return 120;
     default:
-      return 60
+      return 180;
   }
 }
   
