@@ -80,10 +80,12 @@ const currentWeek = Math.ceil(
   (todaysDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24 * 7),
 );
 
+console.log("current week is:" + currentWeek);
+
 if (currentWeek - 104 < 1) {
   document.getElementById("weekid").innerText = 1;
 } else {
-  document.getElementById("weekid").innerText = currentWeek - 129;
+  document.getElementById("weekid").innerText = currentWeek - 125;
 }
 
 // FETCH USER DATA FROM SERVER -> LOCAL
