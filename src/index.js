@@ -83,10 +83,10 @@ const currentWeek = Math.ceil(
 
 console.log("current week is:" + currentWeek);
 
-if (currentWeek - 125 < 1) {
+if (currentWeek - 157 < 1) {
   weekid.innerText = 1;
 } else {
-  weekid.innerText = currentWeek - 125;
+  weekid.innerText = currentWeek - 157;
 }
 
 // FETCH USER DATA FROM SERVER -> LOCAL
