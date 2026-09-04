@@ -71,6 +71,7 @@ let pdfIcon = document.getElementById("pdf-icon");
 let homeButton = document.getElementById("home-button");
 let backButton = document.getElementById("back-button");
 let submitButton = document.getElementById("submit-button");
+let weekid = document.getElementById("weekid");
 const navListWrapper = document.getElementById("nav-list-wrapper");
 let levelList;
 let levelUl;
@@ -82,10 +83,10 @@ const currentWeek = Math.ceil(
 
 console.log("current week is:" + currentWeek);
 
-if (currentWeek - 104 < 1) {
-  document.getElementById("weekid").innerText = 1;
+if (currentWeek - 125 < 1) {
+  weekid.innerText = 1;
 } else {
-  document.getElementById("weekid").innerText = currentWeek - 125;
+  weekid.innerText = currentWeek - 125;
 }
 
 // FETCH USER DATA FROM SERVER -> LOCAL
@@ -277,8 +278,10 @@ function callSongList(e) {
 
 async function loadSong(e) {
   splash.style.display = "none";
+  iframe.style.display = "block";
   iframe.style.width = "100%";
   iframe.style.height = "100%";
+  iframe.style.border = "none";
   iframe.src = this.dataset.pdf + "#zoom=118&navpanes=0&pagemode=none";
   videoLink.href = this.dataset.video;
   pdfLink.href = this.dataset.pdf + "#zoom=83";

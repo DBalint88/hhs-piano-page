@@ -1,59 +1,80 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" href="style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="stylesheet" href="style.css" />
     <script src="bundle.js" defer></script>
     <title>The HHS Piano Page</title>
-</head>
-  
-  <body id="body">
-    
-    <div id="content-wrapper">
+  </head>
 
+  <body id="body">
+    <div id="content-wrapper">
       <nav>
         <div id="nav-list-wrapper">
           <!-- Javascript adds the songs lists here, appended to #nav-list-wrapper -->
         </div>
-                
+
         <div>
           <p id="back-button">&lt&lt back</p>
         </div>
-        
       </nav>
 
       <main>
-        <iframe id="iframe" src="" frameborder="0"></iframe>
+        <iframe id="iframe" src="" style="display: none; border: none"></iframe>
         <div class="level-list" id="splash">
           <h1>The HHS Piano Page</h1>
-          <p id="splash-greeting">Please log in with your Hamden.org account.</p>
-          <button id="googleSignIn" class="show"><img src="images/google_logo.svg" alt=""><span>Sign in with Google</span></button>
-          <img id="loading-gif" src="images/Loading.gif" alt="">
+          <p id="splash-greeting">
+            Please log in with your Hamden.org account.
+          </p>
+          <button id="googleSignIn" class="show">
+            <img src="images/google_logo.svg" alt="" /><span
+              >Sign in with Google</span
+            >
+          </button>
+          <img id="loading-gif" src="images/Loading.gif" alt="" />
           <button id="signoutButton">Sign Out</button>
-          <br></br>
-          <p>All of the PDFs on this page are the work of Gil DeBenedetti @ <a href="https://gmajormusictheory.org/Freebies/freebiesFP.html">G Major Music Theory</a><p>
-          <p>Used with permission.</p>         
-          
+          <br />
+          <p>
+            All of the PDFs on this page are the work of Gil DeBenedetti @
+            <a href="https://gmajormusictheory.org/Freebies/freebiesFP.html"
+              >G Major Music Theory</a
+            >
+          </p>
+          <p></p>
+          <p>Used with permission.</p>
         </div>
-             
       </main>
-        
-      
+
       <div id="quota-panel">
-        <p id="quota-text" ><strong>Week <span id="weekid"></span> Quota</strong><br>
-          Attempted: <span id="points-attempted"></span> / <span class="quota-max">60</span><br>
-          Earned: <span id ="points-earned"></span> / <span class="quota-max">60</span></p>
+        <p id="quota-text">
+          <strong>Week <span id="weekid"></span> Quota</strong><br />
+          Attempted: <span id="points-attempted"></span> /
+          <span class="quota-max">60</span><br />
+          Earned: <span id="points-earned"></span> /
+          <span class="quota-max">60</span>
+        </p>
       </div>
       <div id="buttons-panel">
-        <div><img id="home-button" src="images/house-icon.png" alt=""></div>
-        <a id="video-link" href="" target="_blank"><img id="yt-icon" src="images/youtube-logo.png" alt="Link to the video of the currently displayed song."></a>
-        <a id="pdf-link" href="" target="_blank"><img id="pdf-icon" src="images/pdf-icon.png" alt="Link to video the current song externally."></a>
-        <div><img id="submit-button" src="images/upload-icon.png" alt=""></div>
+        <div><img id="home-button" src="images/house-icon.png" alt="" /></div>
+        <a id="video-link" href="" target="_blank"
+          ><img
+            id="yt-icon"
+            src="images/youtube-logo.png"
+            alt="Link to the video of the currently displayed song."
+        /></a>
+        <a id="pdf-link" href="" target="_blank"
+          ><img
+            id="pdf-icon"
+            src="images/pdf-icon.png"
+            alt="Link to video the current song externally."
+        /></a>
+        <div>
+          <img id="submit-button" src="images/upload-icon.png" alt="" />
+        </div>
       </div>
-        
     </div>
   </body>
 </html>
