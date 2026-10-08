@@ -523,7 +523,7 @@ function confirmInstructor() {
   instructorModal.classList.add("modal");
   modalContent.classList.add("modal-content");
 
-  balintButton.textContent = "Mr. Crebbin";
+  balintButton.textContent = "Ms. Means";
   rossButton.textContent = "Ms. Rossomando-Heise";
 
   modalContent.appendChild(modalParagraph);
